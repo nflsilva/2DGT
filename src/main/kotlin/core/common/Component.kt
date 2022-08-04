@@ -1,6 +1,6 @@
 package core.common
 
-import core.common.dto.UpdateData
+import core.common.dto.UpdateContext
 import core.common.observer.CleanupObserver
 import core.common.observer.SignalObserver
 import core.common.observer.UpdateObserver
@@ -12,9 +12,9 @@ abstract class Component {
     var signalObserver: SignalObserver? = null
     var cleanupObserver: CleanupObserver? = null
 
-    protected fun setUpdateObserver(observerMethod: (context: UpdateData) -> Unit) {
+    protected fun setUpdateObserver(observerMethod: (context: UpdateContext) -> Unit) {
         updateObserver = object : UpdateObserver {
-            override fun onUpdate(context: UpdateData) {
+            override fun onUpdate(context: UpdateContext) {
                 observerMethod(context)
             }
         }

@@ -1,7 +1,7 @@
 package ui
 
 import org.lwjgl.glfw.GLFW.glfwGetTime
-import tools.configuration.EngineConfiguration
+import core.EngineConfiguration
 import ui.dto.InputStateData
 import ui.input.Keyboard
 import ui.input.Mouse

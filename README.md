@@ -1,13 +1,9 @@
-# K3DGE
-A very simple 3D and 2D game engine written in Kotlin
+# 2DGT
 
 <div id="top"></div>
 <br />
 <div align="center">
-  <img src="/assets/k3dge.gif">
 </div>
-
-[![](https://jitpack.io/v/nflsilva/K3DGE.svg)](https://jitpack.io/#nflsilva/K3DGE)
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -34,8 +30,8 @@ A very simple 3D and 2D game engine written in Kotlin
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-K3DGE is very simple Game Engine in Koltin.
-It supports both 2D and 3D rendering.
+A collection of very simple tools to build 2D games.
+It supports 2D rendering.
 
 ### Built With
 
@@ -55,7 +51,7 @@ This section should list any major components used in this project.
 
 ### Compiling
 
-The recommended way of compiling K3DGE is with IntelliJ IDEA, using `Gradle`.
+The recommended way of compiling 2DGT is with IntelliJ IDEA, using `Gradle`.
 
 <!-- TODO -->
 
@@ -73,5 +69,3 @@ As study material I would like to acknowledge the following:
 * [Component based architecture](https://gameprogrammingpatterns.com/component.html)
 * [ThinMatrix YouTube channel](https://www.youtube.com/channel/UCUkRj4qoT1bsWpE_C8lZYoQ)
 * [TheBennyBox YouTube channel](https://www.youtube.com/channel/UCnlpv-hhcsAtEHKR2y2fW4Q)
-
-

@@ -1,96 +1,208 @@
 package render
 
-import org.joml.Vector4f
+import org.joml.Matrix4f
+import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL30
 import org.lwjgl.opengl.GL30.glClearColor
-import render.common.dto.TransformData
-import render.common.model.Mesh
-import render.common.model.Texture
-import render.common.shader.Shader
-import render.renderer2d.Renderer2D
-import render.renderer2d.dto.Particle
-import render.renderer2d.dto.Shape
-import render.renderer2d.dto.Sprite
-import render.renderer2d.dto.Transform2DData
-import render.renderer2d.model.SpriteSizeEnum
-import render.renderer3d.Renderer3D
-import render.renderer3d.dto.CameraData
-import render.renderer3d.dto.LightData
-import render.renderer3d.dto.Transform3DData
-import tools.configuration.EngineConfiguration
+import render.dto.Particle
+import render.dto.Shape
+import render.dto.Sprite
+import render.model.*
+import render.shader.ParticleShader
+import render.shader.ShapeShader
+import render.shader.SpriteShader
+import core.EngineConfiguration
 
-class RenderEngine(configuration: EngineConfiguration) {
+class RenderEngine(private val configuration: EngineConfiguration) {
 
-    private var backgroundColor: Vector4f = Vector4f(0.0f)
+    private var backgroundColor: Color = Color(0.0f)
 
-    private var renderer2D: Renderer2D
-    private var renderer3D: Renderer3D
+    private lateinit var spriteBatches: MutableList<SpriteBatch>
+    private lateinit var spriteShader: SpriteShader
 
-    init {
-        renderer3D = Renderer3D(configuration)
-        renderer2D = Renderer2D(configuration)
-    }
+    private lateinit var particleBatches: MutableList<ParticlesBatch>
+    private lateinit var particleShader: ParticleShader
 
-    fun setBackgroundColor(color: Vector4f) {
-        backgroundColor = color
+    private lateinit var shapeBatches: MutableList<ShapesBatch>
+    private lateinit var shapeShader: ShapeShader
+
+    private var maxTextureSlots: Int = 0
+
+    private var zoom = 0.0F
+    private val bottom = 0.0F
+    private val left = 0.0F
+    private val top = configuration.resolutionHeight.toFloat() * (1.0F - zoom)
+    private val right = configuration.resolutionWidth.toFloat() * (1.0F - zoom)
+
+    companion object {
+        const val DEFAULT_BATCH_SIZE: Int = 10000
+        const val DEFAULT_SCREEN_RENDER_MARGINS: Int = 100
     }
 
     fun onStart() {
-        renderer2D.onStart()
-        renderer3D.onStart()
-    }
 
+        val mtsb = BufferUtils.createIntBuffer(1)
+        glGetIntegerv(GL30.GL_MAX_TEXTURE_IMAGE_UNITS, mtsb)
+        maxTextureSlots = mtsb.get()
+
+        spriteBatches = mutableListOf()
+        spriteShader = SpriteShader()
+
+        particleShader = ParticleShader()
+        particleBatches = mutableListOf()
+
+        shapeShader = ShapeShader()
+        shapeBatches = mutableListOf()
+    }
     fun onFrame() {
 
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-        glClearColor(backgroundColor.x, backgroundColor.y, backgroundColor.z, backgroundColor.w)
+        glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a)
 
-        renderer3D.onFrame()
-        renderer2D.onFrame()
+        glViewport(0, 0, configuration.resolutionWidth, configuration.resolutionHeight)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK)
+        draw()
 
     }
-
     fun onUpdate() {
-        renderer3D.onUpdate()
-        renderer2D.onUpdate()
+        spriteBatches.forEach { it.clear() }
+        particleBatches.forEach { it.clear() }
+        shapeBatches.forEach { it.clear() }
     }
-
     fun onCleanUp() {
-        renderer3D.onCleanUp()
-        renderer2D.onCleanUp()
+        for (batch in spriteBatches) {
+            batch.cleanUp()
+        }
     }
 
-    fun renderCamera(cameraData: CameraData) {
-        renderer3D.renderCamera(cameraData)
+    fun setBackgroundColor(color: Color) {
+        backgroundColor = color
+    }
+    fun render(sprite: Sprite, transform: Transform) {
+        if (isVisible(transform, sprite.size.value)) {
+            addToSuitableSpriteBatch(sprite, transform)
+        }
+    }
+    fun render(particle: Particle, transform: Transform) {
+        if (isVisible(transform, particle.size)) {
+            addToSuitableParticleBatch(particle, transform)
+        }
+    }
+    fun render(shape: Shape, transform: Transform) {
+        if (isVisible(transform, 0f)) {
+            addToSuitableShapeBatch(shape, transform)
+        }
     }
 
-    fun renderDirectionalLight(light: LightData) {
-        renderer3D.renderDirectionalLight(light)
+    private fun isVisible(transform: Transform, size: Float): Boolean {
+        return transform.position.x > left - DEFAULT_SCREEN_RENDER_MARGINS &&
+                transform.position.x + size < right + DEFAULT_SCREEN_RENDER_MARGINS &&
+                transform.position.y < top + DEFAULT_SCREEN_RENDER_MARGINS &&
+                transform.position.y + size > bottom - DEFAULT_SCREEN_RENDER_MARGINS
+    }
+    private fun addToSuitableSpriteBatch(data: Sprite, transform: Transform) {
+        var suitableBatch: SpriteBatch? = null
+        for (batch in spriteBatches) {
+            if (batch.isFull()) {
+                continue
+            }
+            if (batch.hasTexture(data.texture) || !batch.isTextureFull()) {
+                suitableBatch = batch
+                break
+            }
+        }
+
+        if (suitableBatch == null) {
+            suitableBatch = SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots)
+            spriteBatches.add(suitableBatch)
+        }
+
+        suitableBatch.addSprite(data, transform)
+    }
+    private fun addToSuitableParticleBatch(data: Particle, transform: Transform) {
+        var suitableBatch: ParticlesBatch? = null
+        for (batch in particleBatches) {
+            if (batch.isFull()) {
+                continue
+            }
+            suitableBatch = batch
+            break
+        }
+
+        if (suitableBatch == null) {
+            suitableBatch = ParticlesBatch(DEFAULT_BATCH_SIZE)
+            particleBatches.add(suitableBatch)
+        }
+
+        suitableBatch.addParticle(data, transform)
+    }
+    private fun addToSuitableShapeBatch(data: Shape, transform: Transform) {
+        var suitableBatch: ShapesBatch? = null
+        for (batch in shapeBatches) {
+            if (batch.isFull()) {
+                continue
+            }
+            suitableBatch = batch
+            break
+        }
+
+
+        if (suitableBatch == null) {
+            suitableBatch = ShapesBatch(DEFAULT_BATCH_SIZE)
+            shapeBatches.add(suitableBatch)
+        }
+
+        suitableBatch.addShape(data, transform)
     }
 
-    fun render3D(mesh: Mesh, texture: Texture, shader: Shader, transform: TransformData) {
-        val t = transform as? Transform3DData ?: return
-        renderer3D.renderTexturedMesh(mesh, texture, shader, t)
+    //TODO: move this method into Shader?
+    private fun prepareShader(shader: Shader, uniformData: ShaderUniforms) {
+        shader.bind()
+        shader.updateUniforms(uniformData)
     }
-
-    fun render2D(texture: Texture, transform: TransformData) {
-        val t = transform as? Transform2DData ?: return
-        renderer2D.renderSprite(Sprite(SpriteSizeEnum.X16, texture), t)
+    private fun draw() {
+        val projectionMatrix: Matrix4f = Matrix4f().setOrtho2D(left, right, bottom, top)
+        drawParticles(projectionMatrix)
+        drawSprites(projectionMatrix)
+        drawShapes(projectionMatrix)
     }
-
-    fun render2D(sprite: Sprite, transform: TransformData) {
-        val t = transform as? Transform2DData ?: return
-        renderer2D.renderSprite(sprite, t)
+    private fun drawSprites(projectionMatrix: Matrix4f) {
+        for (batch in spriteBatches) {
+            batch.bind()
+            prepareShader(
+                spriteShader,
+                ShaderUniforms(
+                    projectionMatrix = projectionMatrix,
+                    textureSlots = batch.getTextureSlots()
+                )
+            )
+            glDrawElements(GL_TRIANGLES, batch.nIndexes, GL_UNSIGNED_INT, 0)
+            batch.unbind()
+        }
     }
-
-    fun render2D(particle: Particle, transform: TransformData) {
-        val t = transform as? Transform2DData ?: return
-        renderer2D.renderParticle(particle, t)
+    private fun drawParticles(projectionMatrix: Matrix4f) {
+        for (batch in particleBatches) {
+            batch.bind()
+            prepareShader(
+                particleShader,
+                ShaderUniforms(projectionMatrix = projectionMatrix)
+            )
+            glDrawElements(GL_POINTS, batch.nIndexes, GL_UNSIGNED_INT, 0)
+            batch.unbind()
+        }
     }
-
-    fun render2D(shape: Shape, transform: TransformData) {
-        val t = transform as? Transform2DData ?: return
-        renderer2D.renderShape(shape, t)
+    private fun drawShapes(projectionMatrix: Matrix4f) {
+        for (batch in shapeBatches) {
+            batch.bind()
+            prepareShader(
+                shapeShader,
+                ShaderUniforms(projectionMatrix = projectionMatrix)
+            )
+            glDrawElements(GL_TRIANGLES, batch.nIndexes, GL_UNSIGNED_INT, 0)
+            batch.unbind()
+        }
     }
 
 }

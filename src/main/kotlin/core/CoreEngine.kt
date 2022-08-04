@@ -1,13 +1,10 @@
 package core
 
 
-import core.camera.Camera
 import core.common.BaseEntity
-import core.common.dto.UpdateData
-import core.light.Light
+import core.common.dto.UpdateContext
 import render.RenderEngine
 import tools.common.Log
-import tools.configuration.EngineConfiguration
 import ui.UIEngine
 import ui.dto.InputStateData
 
@@ -15,8 +12,6 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
 
     private var isRunning: Boolean = false
     private var gameObjects: MutableList<BaseEntity> = mutableListOf()
-    private var gameLights: MutableList<Light> = mutableListOf()
-    private var camera: Camera? = null
 
     private val uiEngine: UIEngine
     private val renderEngine: RenderEngine
@@ -31,9 +26,9 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
 
     private fun run() {
 
-        var frameStart: Double = 0.0
-        var frameEnd: Double = 0.0
-        var frameDelta: Double = 0.0
+        var frameStart: Double
+        var frameEnd: Double
+        var frameDelta = 0.0
 
         var frames = 0
         var ticks = 0
@@ -42,9 +37,9 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
         val frameTime: Double = 1.0 / framePerSecondCap
         val printTime: Double = 1.0 / printsPerSecondCap
 
-        var timeSinceTick: Double = 0.0
-        var timeSinceFrame: Double = 0.0
-        var timeSincePrint: Double = 0.0
+        var timeSinceTick = 0.0
+        var timeSinceFrame = 0.0
+        var timeSincePrint = 0.0
 
         while (isRunning) {
 
@@ -95,12 +90,8 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
         uiEngine.onUpdate()
         renderEngine.onUpdate()
         gameObjects.forEach { o ->
-            o.onUpdate(UpdateData(elapsedTime, input, renderEngine, entity = o))
+            o.onUpdate(UpdateContext(elapsedTime, input, renderEngine, entity = o))
         }
-        gameLights.forEach { l ->
-            l.onUpdate(UpdateData(elapsedTime, input, renderEngine, light = l))
-        }
-        camera?.onUpdate(UpdateData(elapsedTime, input, renderEngine, camera = camera))
     }
 
     private fun onCleanUp() {
@@ -118,16 +109,8 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
         run()
     }
 
-    fun addEntity(gameObject: BaseEntity) {
-        gameObjects.add(gameObject)
-    }
-
-    fun addEntity(camera: Camera) {
-        this.camera = camera
-    }
-
-    fun addEntity(light: Light) {
-        gameLights.add(light)
+    fun addEntity(entity: BaseEntity) {
+        gameObjects.add(entity)
     }
 
     companion object {
@@ -135,4 +118,5 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
         private var ticksPerSecondCap: Int = 128
         private var framePerSecondCap: Int = 500
     }
+
 }

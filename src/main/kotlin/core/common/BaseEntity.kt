@@ -1,20 +1,20 @@
 package core.common
 
-import core.common.dto.UpdateData
+import core.common.dto.UpdateContext
 import core.common.observer.CleanupObserver
 import core.common.observer.SignalObserver
 import core.common.observer.UpdateObserver
-import render.common.dto.TransformData
+import render.model.Transform
 import java.util.*
 
-abstract class BaseEntity(var transform: TransformData) {
+open class BaseEntity(var transform: Transform) {
 
     val uid: UUID = UUID.randomUUID()
     private val updateObservers: MutableList<UpdateObserver> = mutableListOf()
     private val signalObservers: MutableList<SignalObserver> = mutableListOf()
     private val cleanupObservers: MutableList<CleanupObserver> = mutableListOf()
 
-    fun onUpdate(context: UpdateData) {
+    fun onUpdate(context: UpdateContext) {
         for (c in updateObservers) {
             c.onUpdate(context)
         }
