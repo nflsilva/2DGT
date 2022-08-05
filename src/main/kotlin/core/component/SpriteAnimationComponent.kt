@@ -1,7 +1,7 @@
-package core.entity.component
+package core.component
 
-import core.common.Component
-import core.common.dto.UpdateContext
+import core.BaseEntity
+import core.dto.UpdateContext
 import render.dto.Sprite
 
 class SpriteAnimationComponent() : Component() {
@@ -17,11 +17,10 @@ class SpriteAnimationComponent() : Component() {
     private val keyframesByState: MutableMap<String, MutableList<AnimationKeyframe>> = mutableMapOf()
 
     init {
-        setUpdateObserver { context -> onUpdate(context) }
-        setCleanupObserver { cleanUp() }
+        setUpdateObserver { entity, context -> onUpdate(entity, context) }
     }
 
-    private fun onUpdate(context: UpdateContext) {
+    private fun onUpdate(entity: BaseEntity, context: UpdateContext) {
 
         if (currentState == null) {
             return
@@ -30,19 +29,13 @@ class SpriteAnimationComponent() : Component() {
         val currentStateKeyframes = keyframesByState[currentState] ?: return
         val currentKeyframe = currentStateKeyframes[currentKeyframeIndex % currentStateKeyframes.size]
 
-        context.entity?.let { entity ->
-            context.graphics.render(currentKeyframe.sprite, entity.transform)
-        }
+        context.graphics.render(currentKeyframe.sprite, entity.transform)
 
         currentKeyframeElapsedTime += context.elapsedTime
         if (currentKeyframe.duration < currentKeyframeElapsedTime) {
             currentKeyframeIndex++
             currentKeyframeElapsedTime = 0.0
         }
-
-    }
-
-    private fun cleanUp() {
 
     }
 

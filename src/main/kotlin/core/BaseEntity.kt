@@ -1,9 +1,11 @@
-package core.common
+package core
 
-import core.common.dto.UpdateContext
-import core.common.observer.CleanupObserver
-import core.common.observer.SignalObserver
-import core.common.observer.UpdateObserver
+import core.component.Component
+import core.component.ComponentSignal
+import core.dto.UpdateContext
+import core.observer.CleanupObserver
+import core.observer.SignalObserver
+import core.observer.UpdateObserver
 import render.model.Transform
 import java.util.*
 
@@ -16,19 +18,17 @@ open class BaseEntity(var transform: Transform) {
 
     fun onUpdate(context: UpdateContext) {
         for (c in updateObservers) {
-            c.onUpdate(context)
+            c.onUpdate(this, context)
         }
     }
-
     fun onSignal(signal: ComponentSignal) {
         for (s in signalObservers) {
-            s.onSignal(signal)
+            s.onSignal(this, signal)
         }
     }
-
     fun cleanUp() {
         for (c in cleanupObservers) {
-            c.onCleanup()
+            c.onCleanup(this)
         }
     }
 

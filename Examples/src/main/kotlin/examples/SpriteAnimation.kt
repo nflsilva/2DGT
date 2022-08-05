@@ -1,9 +1,9 @@
+import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
-import core.common.BaseEntity
-import core.entity.component.ParticleComponent
-import core.entity.component.SpriteAnimationComponent
-import core.entity.component.TranslateComponent
+import core.component.ParticleComponent
+import core.component.SpriteAnimationComponent
+import core.component.TranslateComponent
 import org.joml.Vector2f
 import render.model.Color
 import render.model.SpriteAtlas

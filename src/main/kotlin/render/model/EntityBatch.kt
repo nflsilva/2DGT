@@ -44,7 +44,6 @@ open class EntityBatch(
         }
 
     }
-
     open fun unbind() {
         for (i in 0 until attributes.size) {
             glDisableVertexAttribArray(i)
@@ -62,7 +61,6 @@ open class EntityBatch(
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         attributes[index] = Buffers(vbo, buffer)
     }
-
     fun addFloatAttributeBuffer(index: Int, size: Int) {
         glBindVertexArray(vao)
         val vbo = glGenBuffers()
@@ -83,7 +81,6 @@ open class EntityBatch(
             }
         }
     }
-
     fun addAttributeData(index: Int, vararg data: Float, perVertex: Boolean = true) {
         val adds = if (perVertex) nVerticesPerEntity else 1
         val buffer = attributes[index]?.buffer as? FloatBuffer ?: return
@@ -93,7 +90,6 @@ open class EntityBatch(
             }
         }
     }
-
     fun addIndexData(vararg data: Int) {
         data.forEach { value ->
             indices.put(value)
@@ -105,11 +101,9 @@ open class EntityBatch(
         indices.clear()
         nEntities = 0
     }
-
     fun isFull(): Boolean {
         return nEntities == maxEntities
     }
-
     fun cleanUp() {
         glBindVertexArray(0)
         glDeleteVertexArrays(vao)
@@ -123,7 +117,6 @@ open class EntityBatch(
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_DYNAMIC_DRAW)
         return Buffers(vbo, buffer)
     }
-
     private fun bindAttributeBuffer(vbo: Int, buffer: Buffer) {
         // TODO: Refactor this IntBuffer / FloatBuffer mess
         glBindBuffer(GL_ARRAY_BUFFER, vbo)
@@ -134,7 +127,6 @@ open class EntityBatch(
             glBufferSubData(GL_ARRAY_BUFFER, 0, buffer as FloatBuffer)
         }
     }
-
     private fun bindIndexBuffer(vbo: Int, buffer: Buffer) {
         val intBuffer = buffer as? IntBuffer ?: return
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo)

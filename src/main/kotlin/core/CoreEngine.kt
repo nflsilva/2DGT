@@ -1,8 +1,8 @@
 package core
 
 
-import core.common.BaseEntity
-import core.common.dto.UpdateContext
+import core.component.ComponentSignal
+import core.dto.UpdateContext
 import render.RenderEngine
 import tools.common.Log
 import ui.UIEngine
@@ -10,8 +10,17 @@ import ui.dto.InputStateData
 
 class CoreEngine(configuration: EngineConfiguration? = null) {
 
+    companion object {
+        private const val printsPerSecondCap: Int = 1
+        private const val ticksPerSecondCap: Int = 128
+        private const val framePerSecondCap: Int = 500
+    }
+
     private var isRunning: Boolean = false
     private var gameObjects: MutableList<BaseEntity> = mutableListOf()
+    private var processingSignalsIndex: Int = 0
+    private var signals: Array<MutableList<ComponentSignal>> =
+        arrayOf(mutableListOf(), mutableListOf())
 
     private val uiEngine: UIEngine
     private val renderEngine: RenderEngine
@@ -78,22 +87,24 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
 
         onCleanUp()
     }
-
     private fun onFrame() {
         delegate?.onFrame()
         uiEngine.onFrame()
         renderEngine.onFrame()
     }
-
     private fun onUpdate(elapsedTime: Double, input: InputStateData) {
         delegate?.onUpdate(elapsedTime, input)
         uiEngine.onUpdate()
         renderEngine.onUpdate()
-        gameObjects.forEach { o ->
-            o.onUpdate(UpdateContext(elapsedTime, input, renderEngine, entity = o))
-        }
-    }
+        processingSignalsIndex = (processingSignalsIndex + 1) % 2
 
+        gameObjects.forEach { o ->
+            signals[processingSignalsIndex].forEach { s -> o.onSignal(s) }
+            o.onUpdate(UpdateContext(elapsedTime, input, this, renderEngine))
+        }
+        signals[processingSignalsIndex].clear()
+
+    }
     private fun onCleanUp() {
         gameObjects.forEach { o ->
             o.cleanUp()
@@ -108,15 +119,11 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
         isRunning = true
         run()
     }
-
     fun addEntity(entity: BaseEntity) {
         gameObjects.add(entity)
     }
-
-    companion object {
-        private var printsPerSecondCap: Int = 1
-        private var ticksPerSecondCap: Int = 128
-        private var framePerSecondCap: Int = 500
+    fun sendSignal(signal: ComponentSignal){
+        signals[(processingSignalsIndex + 1) % 2].add(signal)
     }
 
 }
