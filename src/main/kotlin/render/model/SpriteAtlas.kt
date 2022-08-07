@@ -6,15 +6,23 @@ import render.dto.Sprite
 open class SpriteAtlas(
     private val texture: Texture,
     private val numberOfRows: Int,
-    private val numberOfColumns: Int
+    private val numberOfColumns: Int,
+    private val spriteSize: SpriteSize,
 ) {
 
     private val sprites: MutableMap<String, Sprite> = mutableMapOf()
 
-    constructor(textureResource: String, numberOfRows: Int, numberOfColumns: Int) :
-            this(Texture(textureResource), numberOfRows, numberOfColumns)
+    enum class SpriteSize(val value: Float) {
+        X16(16f),
+        X32(32f),
+        X64(64f)
+    }
 
-    fun setSprite(spriteSize: SpriteSizeEnum, name: String, row: Int, column: Int) {
+    constructor(textureResource: String, numberOfRows: Int, numberOfColumns: Int, spriteSize: SpriteSize) :
+            this(Texture(textureResource), numberOfRows, numberOfColumns, spriteSize)
+
+    fun setSprite(name: String, row: Int, column: Int) {
+
         //TODO: Create exception for this
         if (column > numberOfColumns || row > numberOfRows || sprites.keys.contains(name)) {
             return
@@ -26,7 +34,6 @@ open class SpriteAtlas(
         val spriteRight = spriteLeft + spriteSize.value / texture.width.toFloat()
 
         sprites[name] = Sprite(
-            spriteSize,
             texture,
             Vector2f(spriteLeft, spriteTop),
             Vector2f(spriteRight, spriteBottom)

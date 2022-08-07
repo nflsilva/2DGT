@@ -1,9 +1,10 @@
-package render.model
+package render.batch
 
 import render.dto.Particle
+import render.dto.Transform
 
 class ParticlesBatch(maxEntities: Int) :
-    EntityBatch(maxEntities, 1, 1) {
+    BaseBatch(maxEntities, 1, 1) {
 
     companion object {
         const val POSITION_INDEX = 0

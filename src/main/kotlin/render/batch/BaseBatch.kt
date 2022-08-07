@@ -1,4 +1,4 @@
-package render.model
+package render.batch
 
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL30.*
@@ -6,7 +6,7 @@ import java.nio.Buffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 
-open class EntityBatch(
+abstract class BaseBatch(
     private val maxEntities: Int,
     private val nVerticesPerEntity: Int,
     private val nIndexesPerEntity: Int

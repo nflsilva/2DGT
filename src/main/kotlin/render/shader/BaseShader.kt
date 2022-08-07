@@ -1,4 +1,4 @@
-package render.model
+package render.shader
 
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -9,7 +9,7 @@ import tools.common.Log
 import tools.common.ResourceManager
 import tools.common.dto.ShaderData
 
-abstract class Shader(vertexData: ShaderData, fragmentData: ShaderData) {
+abstract class BaseShader(vertexData: ShaderData, fragmentData: ShaderData) {
 
     private val id: Int = glCreateProgram()
     private val shaders: MutableList<Int> = mutableListOf()

@@ -1,7 +1,5 @@
 package render.dto
 
-import render.model.Color
-
 data class Shape(
     val type: Int,
     val color: Color

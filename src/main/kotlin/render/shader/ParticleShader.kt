@@ -2,10 +2,8 @@ package render.shader
 
 import org.lwjgl.opengl.GL11.glEnable
 import org.lwjgl.opengl.GL20.GL_VERTEX_PROGRAM_POINT_SIZE
-import render.model.Shader
-import render.model.ShaderUniforms
 
-class ParticleShader : Shader(VERTEX_SHADER, FRAGMENT_SHADER) {
+class ParticleShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
 
     init {
         bindAttributes()
@@ -29,8 +27,8 @@ class ParticleShader : Shader(VERTEX_SHADER, FRAGMENT_SHADER) {
     }
 
     companion object {
-        private const val VERTEX_SHADER = "/shader/2d/particle/vertex.glsl"
-        private const val FRAGMENT_SHADER = "/shader/2d/particle/fragment.glsl"
+        private const val VERTEX_SHADER = "/shader/particle/vertex.glsl"
+        private const val FRAGMENT_SHADER = "/shader/particle/fragment.glsl"
 
         private const val POSITION_ATTRIBUTE = "in_position"
         private const val SIZE_ATTRIBUTE = "in_size"

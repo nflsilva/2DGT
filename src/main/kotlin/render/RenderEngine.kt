@@ -5,14 +5,13 @@ import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL30
 import org.lwjgl.opengl.GL30.glClearColor
-import render.dto.Particle
-import render.dto.Shape
-import render.dto.Sprite
-import render.model.*
-import render.shader.ParticleShader
-import render.shader.ShapeShader
-import render.shader.SpriteShader
 import core.EngineConfiguration
+import org.joml.Vector2f
+import render.batch.ParticlesBatch
+import render.batch.ShapesBatch
+import render.batch.SpriteBatch
+import render.dto.*
+import render.shader.*
 
 class RenderEngine(private val configuration: EngineConfiguration) {
 
@@ -36,7 +35,7 @@ class RenderEngine(private val configuration: EngineConfiguration) {
     private val right = configuration.resolutionWidth.toFloat() * (1.0F - zoom)
 
     companion object {
-        const val DEFAULT_BATCH_SIZE: Int = 10000
+        const val DEFAULT_BATCH_SIZE: Int = 2
         const val DEFAULT_SCREEN_RENDER_MARGINS: Int = 100
     }
 
@@ -81,26 +80,26 @@ class RenderEngine(private val configuration: EngineConfiguration) {
         backgroundColor = color
     }
     fun render(sprite: Sprite, transform: Transform) {
-        if (isVisible(transform, sprite.size.value)) {
+        if (isVisible(transform, transform.scale)) {
             addToSuitableSpriteBatch(sprite, transform)
         }
     }
     fun render(particle: Particle, transform: Transform) {
-        if (isVisible(transform, particle.size)) {
+        if (isVisible(transform, Vector2f(particle.size))) {
             addToSuitableParticleBatch(particle, transform)
         }
     }
     fun render(shape: Shape, transform: Transform) {
-        if (isVisible(transform, 0f)) {
+        if (isVisible(transform, transform.scale)) {
             addToSuitableShapeBatch(shape, transform)
         }
     }
 
-    private fun isVisible(transform: Transform, size: Float): Boolean {
+    private fun isVisible(transform: Transform, size: Vector2f): Boolean {
         return transform.position.x > left - DEFAULT_SCREEN_RENDER_MARGINS &&
-                transform.position.x + size < right + DEFAULT_SCREEN_RENDER_MARGINS &&
+                transform.position.x + size.x < right + DEFAULT_SCREEN_RENDER_MARGINS &&
                 transform.position.y < top + DEFAULT_SCREEN_RENDER_MARGINS &&
-                transform.position.y + size > bottom - DEFAULT_SCREEN_RENDER_MARGINS
+                transform.position.y + size.y > bottom - DEFAULT_SCREEN_RENDER_MARGINS
     }
     private fun addToSuitableSpriteBatch(data: Sprite, transform: Transform) {
         var suitableBatch: SpriteBatch? = null
@@ -158,7 +157,7 @@ class RenderEngine(private val configuration: EngineConfiguration) {
     }
 
     //TODO: move this method into Shader?
-    private fun prepareShader(shader: Shader, uniformData: ShaderUniforms) {
+    private fun prepareShader(shader: BaseShader, uniformData: ShaderUniforms) {
         shader.bind()
         shader.updateUniforms(uniformData)
     }

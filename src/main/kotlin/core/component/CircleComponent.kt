@@ -4,7 +4,7 @@ import core.BaseEntity
 import core.dto.UpdateContext
 import render.dto.Particle
 
-class CircleComponent(private val particleData: Particle) : Component() {
+class CircleComponent(private val particleData: Particle) : BaseComponent() {
 
     init {
         setUpdateObserver { entity, context -> onUpdate(entity, context) }

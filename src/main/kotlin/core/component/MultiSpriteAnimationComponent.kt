@@ -3,12 +3,16 @@ package core.component
 import core.BaseEntity
 import core.dto.UpdateContext
 import org.joml.Vector2f
-import render.dto.Sprite
+import render.dto.Transform
+import render.model.MultiSprite
 
-class SpriteAnimationComponent() : BaseComponent() {
+class MultiSpriteAnimationComponent(
+    private val rows: Int,
+    private val columns: Int
+) : BaseComponent() {
 
     private data class AnimationKeyframe(
-        val sprite: Sprite,
+        val multiSprite: MultiSprite,
         val duration: Double
     )
 
@@ -27,8 +31,23 @@ class SpriteAnimationComponent() : BaseComponent() {
         val currentStateKeyframes = keyframesByState[currentState] ?: return
 
         val currentKeyframe = currentStateKeyframes[currentKeyframeIndex % currentStateKeyframes.size]
+        val sprites = currentKeyframe.multiSprite
 
-        context.graphics.render(currentKeyframe.sprite, entity.transform)
+        val spriteSize = Vector2f(entity.transform.scale)
+            .div(Vector2f(columns.toFloat(), rows.toFloat()))
+
+        for(r in 0 until rows){
+            for(c in 0 until columns){
+                val sprite = sprites.getSprite(r, c) ?: continue
+                val drawOffset = Vector2f(c.toFloat(), r.toFloat()).mul(spriteSize)
+                val transform = Transform(
+                    Vector2f(entity.transform.position).add(drawOffset),
+                    entity.transform.rotation,
+                    spriteSize
+                )
+                context.graphics.render(sprite, transform)
+            }
+        }
 
         currentKeyframeElapsedTime += context.elapsedTime
         if (currentKeyframe.duration < currentKeyframeElapsedTime) {
@@ -38,11 +57,15 @@ class SpriteAnimationComponent() : BaseComponent() {
 
     }
 
-    fun addAnimationKeyframe(state: String, sprite: Sprite, duration: Double) {
+    fun addAnimationKeyframe(state: String,
+                             multiSprite: MultiSprite,
+                             duration: Double) {
+
         if (state !in keyframesByState.keys) {
             keyframesByState[state] = mutableListOf()
         }
-        keyframesByState[state]?.add(AnimationKeyframe(sprite, duration))
+
+        keyframesByState[state]?.add(AnimationKeyframe(multiSprite, duration))
     }
 
     fun setState(state: String) {

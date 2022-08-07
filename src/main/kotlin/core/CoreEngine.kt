@@ -19,8 +19,7 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
     private var isRunning: Boolean = false
     private var gameObjects: MutableList<BaseEntity> = mutableListOf()
     private var processingSignalsIndex: Int = 0
-    private var signals: Array<MutableList<ComponentSignal>> =
-        arrayOf(mutableListOf(), mutableListOf())
+    private var signals: Array<MutableList<ComponentSignal>> = arrayOf(mutableListOf(), mutableListOf())
 
     private val uiEngine: UIEngine
     private val renderEngine: RenderEngine
@@ -96,6 +95,7 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
         delegate?.onUpdate(elapsedTime, input)
         uiEngine.onUpdate()
         renderEngine.onUpdate()
+
         processingSignalsIndex = (processingSignalsIndex + 1) % 2
 
         gameObjects.forEach { o ->

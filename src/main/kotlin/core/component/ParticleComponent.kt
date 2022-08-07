@@ -2,10 +2,10 @@ package core.component
 
 import core.BaseEntity
 import core.dto.UpdateContext
-import render.model.Color
+import render.dto.Color
 import render.dto.Particle
 
-class ParticleComponent(private val particle: Particle) : Component() {
+class ParticleComponent(private val particle: Particle) : BaseComponent() {
 
     constructor(type: Int, size: Float, color: Color) : this(Particle(type, size, color))
 

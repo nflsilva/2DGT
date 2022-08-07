@@ -2,10 +2,10 @@ package core.component
 
 import core.BaseEntity
 import core.dto.UpdateContext
-import render.model.Color
+import render.dto.Color
 import render.dto.Shape
 
-class ShapeComponent(private val shape: Shape) : Component() {
+class ShapeComponent(private val shape: Shape) : BaseComponent() {
 
     constructor(type: Shape.Type, color: Color) : this(Shape(type.value, color))
 

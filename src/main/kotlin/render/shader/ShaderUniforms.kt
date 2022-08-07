@@ -1,4 +1,4 @@
-package render.model
+package render.shader
 
 import org.joml.Matrix4f
 

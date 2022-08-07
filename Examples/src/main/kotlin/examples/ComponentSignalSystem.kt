@@ -3,18 +3,17 @@ package examples
 import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
-import core.component.Component
+import core.component.BaseComponent
 import core.component.ComponentSignal
 import core.component.ComponentSignalDataField
 import core.component.ShapeComponent
 import core.dto.UpdateContext
 import org.joml.Random
 import org.joml.Vector2f
+import render.dto.Color
 import render.dto.Shape
-import render.model.Color
-import render.model.Transform
+import render.dto.Transform
 import ui.dto.InputStateData
-import kotlin.math.sign
 
 fun main(args: Array<String>) {
 
@@ -72,7 +71,7 @@ class ComponentSignalSystem(private val engine: CoreEngine) : CoreEngineDelegate
         }
     }
 
-    class FloorDetectionComponent(): Component(){
+    class FloorDetectionComponent(): BaseComponent(){
 
         companion object {
             const val FORCE_DATA_TYPE = "force"
@@ -95,7 +94,7 @@ class ComponentSignalSystem(private val engine: CoreEngine) : CoreEngineDelegate
         }
     }
 
-    class InvertForceComponent(): Component(){
+    class InvertForceComponent(): BaseComponent(){
 
         var newAcceleration: Float? = null
 

@@ -3,7 +3,7 @@ package core.component
 import core.BaseEntity
 import core.dto.UpdateContext
 
-class RotateComponent(private val velocity: Float) : Component() {
+class RotateComponent(private val velocity: Float) : BaseComponent() {
 
     init {
         setUpdateObserver { entity: BaseEntity, context -> onUpdate(entity, context) }

@@ -4,7 +4,7 @@ import core.BaseEntity
 import core.dto.UpdateContext
 import ui.dto.InputStateData
 
-class TranslateComponent(private val speed: Float = 10F) : Component() {
+class TranslateComponent(private val speed: Float = 10F) : BaseComponent() {
 
     init {
         setUpdateObserver { entity, context -> onUpdate(entity, context) }

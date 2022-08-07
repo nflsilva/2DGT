@@ -1,10 +1,11 @@
-package render.model
+package render.batch
 
 import org.joml.Vector2f
 import render.dto.Shape
+import render.dto.Transform
 
 class ShapesBatch(maxShapes: Int) :
-    EntityBatch(maxShapes, 4, 6) {
+    BaseBatch(maxShapes, 4, 6) {
 
     companion object {
         const val POSITION_INDEX = 0

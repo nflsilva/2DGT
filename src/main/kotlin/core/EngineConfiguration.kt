@@ -8,7 +8,7 @@ class EngineConfiguration(var windowTitle: String,
     companion object {
         fun default(): EngineConfiguration {
             return EngineConfiguration(
-                "K3DGE",
+                "2DGT",
                 1280,
                 720,
                 true)

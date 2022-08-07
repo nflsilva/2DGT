@@ -5,10 +5,10 @@ import core.component.ParticleComponent
 import core.component.SpriteAnimationComponent
 import core.component.TranslateComponent
 import org.joml.Vector2f
-import render.model.Color
+import render.dto.Color
+import render.dto.Sprite
+import render.dto.Transform
 import render.model.SpriteAtlas
-import render.model.SpriteSizeEnum
-import render.model.Transform
 import ui.dto.InputStateData
 
 fun main(args: Array<String>) {
@@ -28,20 +28,27 @@ class AnimatedSprites(private val engine: CoreEngine) : CoreEngineDelegate {
     override fun onStart() {
 
         val animatedSprite = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(10f, 10f)))
-        val atlas = SpriteAtlas("/texture/dungeon.png", 9, 28).apply {
-            setSprite(SpriteSizeEnum.X16,"walking0", 6, 0)
-            setSprite(SpriteSizeEnum.X16,"walking1", 6, 1)
-            setSprite(SpriteSizeEnum.X16,"walking2", 6, 2)
-            setSprite(SpriteSizeEnum.X16,"walking3", 6, 3)
-            setSprite(SpriteSizeEnum.X16,"walking4", 6, 4)
-            setSprite(SpriteSizeEnum.X16,"walking5", 6, 5)
+        val atlas = SpriteAtlas(
+            "/texture/dungeon.png",
+            9,
+            28,
+            SpriteAtlas.SpriteSize.X16).apply {
 
-            setSprite(SpriteSizeEnum.X16,"idle0", 5, 0)
-            setSprite(SpriteSizeEnum.X16,"idle1", 5, 1)
-            setSprite(SpriteSizeEnum.X16,"idle2", 5, 2)
-            setSprite(SpriteSizeEnum.X16,"idle3", 5, 3)
-            setSprite(SpriteSizeEnum.X16,"idle4", 5, 4)
-            setSprite(SpriteSizeEnum.X16,"idle5", 5, 5)
+            setSprite("walking0", 6, 0)
+            setSprite("walking1", 6, 1)
+            setSprite("walking2", 6, 2)
+            setSprite("walking3", 6, 3)
+            setSprite("walking4", 6, 4)
+            setSprite("walking5", 6, 5)
+
+            setSprite("idle0", 5, 0)
+            setSprite("idle1", 5, 1)
+            setSprite("idle2", 5, 2)
+            setSprite("idle3", 5, 3)
+            setSprite("idle4", 5, 4)
+            setSprite("idle5", 5, 5)
+
+            setSprite("idle0", 5, 0)
         }
 
         animComp.apply {

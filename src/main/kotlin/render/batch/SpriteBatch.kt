@@ -1,35 +1,35 @@
-package render.model
+package render.batch
 
 import org.joml.Vector2f
 import org.lwjgl.opengl.GL30.glBindVertexArray
 import render.dto.Sprite
+import render.model.Texture
+import render.dto.Transform
 
 class SpriteBatch(
     private val maxSprites: Int,
     private val maxTextures: Int
 ) :
-    EntityBatch(maxSprites, 4, 6) {
+    BaseBatch(maxSprites, 4, 6) {
 
     private val textures: MutableList<Texture> = mutableListOf()
 
     companion object {
         const val POSITION_INDEX = 0
-        const val SIZE_INDEX = 1
-        const val TRANSLATION_INDEX = 2
-        const val ROTATION_INDEX = 3
-        const val SCALE_INDEX = 4
-        const val TEXTURE_COORDS_INDEX = 5
-        const val TEXTURE_INDEX = 6
+        const val TRANSLATION_INDEX = 1
+        const val ROTATION_INDEX = 2
+        const val SCALE_INDEX = 3
+        const val TEXTURE_COORDS_INDEX = 4
+        const val TEXTURE_INDEX = 5
     }
 
     init {
         addFloatAttributeBuffer(POSITION_INDEX, 2)
-        addFloatAttributeBuffer(SIZE_INDEX, 1)
         addFloatAttributeBuffer(TRANSLATION_INDEX, 2)
         addFloatAttributeBuffer(ROTATION_INDEX, 1)
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addFloatAttributeBuffer(TEXTURE_COORDS_INDEX, 2)
-        addFloatAttributeBuffer(TEXTURE_INDEX, 1)
+        addIntAttributeBuffer(TEXTURE_INDEX, 1)
     }
 
     override fun bind() {
@@ -51,11 +51,10 @@ class SpriteBatch(
             return
         }
 
-        val size = sprite.size.value
-        val tl = Vector2f(0f, size)
+        val tl = Vector2f(0f, 1f)
         val bl = Vector2f(0f, 0f)
-        val br = Vector2f(size, 0f)
-        val tr = Vector2f(size, size)
+        val br = Vector2f(1f, 0f)
+        val tr = Vector2f(1f, 1f)
 
         addAttributeData(
             POSITION_INDEX,
@@ -66,10 +65,8 @@ class SpriteBatch(
             perVertex = false
         )
 
-        addAttributeData(SIZE_INDEX, size)
         addAttributeData(TRANSLATION_INDEX, transform.position.x, transform.position.y)
         addAttributeData(ROTATION_INDEX, transform.rotation)
-        addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)
         addAttributeData(SCALE_INDEX, transform.scale.x, transform.scale.y)
         addAttributeData(
             TEXTURE_COORDS_INDEX,
@@ -87,10 +84,10 @@ class SpriteBatch(
             perVertex = false
         )
 
-        var textureIndex = textures.indexOf(sprite.texture).toFloat()
+        var textureIndex = textures.indexOf(sprite.texture)
         if (textureIndex < 0) {
             textures.add(sprite.texture)
-            textureIndex = textures.size.toFloat()
+            textureIndex = textures.size
         }
 
         addAttributeData(TEXTURE_INDEX, textureIndex)

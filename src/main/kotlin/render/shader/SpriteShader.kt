@@ -1,9 +1,6 @@
 package render.shader
 
-import render.model.Shader
-import render.model.ShaderUniforms
-
-class SpriteShader : Shader(VERTEX_SHADER, FRAGMENT_SHADER) {
+class SpriteShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
 
     init {
         bindAttributes()
@@ -34,8 +31,8 @@ class SpriteShader : Shader(VERTEX_SHADER, FRAGMENT_SHADER) {
     }
 
     companion object {
-        private const val VERTEX_SHADER = "/shader/2d/sprite/vertex.glsl"
-        private const val FRAGMENT_SHADER = "/shader/2d/sprite/fragment.glsl"
+        private const val VERTEX_SHADER = "/shader/sprite/vertex.glsl"
+        private const val FRAGMENT_SHADER = "/shader/sprite/fragment.glsl"
 
         private const val POSITION_ATTRIBUTE = "in_position"
         private const val ROTATION_ATTRIBUTE = "in_rotation"

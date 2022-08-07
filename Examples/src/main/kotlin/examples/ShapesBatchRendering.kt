@@ -6,9 +6,9 @@ import core.CoreEngineDelegate
 import core.component.ShapeComponent
 import org.joml.Random
 import org.joml.Vector2f
+import render.dto.Color
 import render.dto.Shape
-import render.model.Color
-import render.model.Transform
+import render.dto.Transform
 import ui.dto.InputStateData
 
 fun main(args: Array<String>) {
@@ -74,7 +74,7 @@ class ShapesBatchRendering(private val engine: CoreEngine) : CoreEngineDelegate 
         shapes.forEach { shape ->
             shape.accelerate(gravity)
 
-            if(shape.transform.position.y <= 10f){
+            if(shape.transform.position.y <= 20f){
                 shape.accelerate(Vector2f(0f, 5000f))
             }
 

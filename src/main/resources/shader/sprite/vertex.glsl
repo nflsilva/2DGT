@@ -1,17 +1,16 @@
 #version 330 core
 
 layout (location=0) in vec2 in_position;
-layout (location=1) in float in_size;
-layout (location=2) in vec2 in_translation;
-layout (location=3) in float in_rotation;
-layout (location=4) in vec2 in_scale;
-layout (location=5) in vec2 in_textureCoords;
-layout (location=6) in float in_textureIndex;
+layout (location=1) in vec2 in_translation;
+layout (location=2) in float in_rotation;
+layout (location=3) in vec2 in_scale;
+layout (location=4) in vec2 in_textureCoords;
+layout (location=5) in int in_textureIndex;
 
 uniform mat4 in_projectionMatrix;
 
 out vec2 textureCoords;
-out float textureIndex;
+flat out int textureIndex;
 
 vec2 translate(vec2 v, vec2 t) {
     return v + t;
