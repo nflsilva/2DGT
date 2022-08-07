@@ -72,7 +72,7 @@ class MultiSpriteExample(private val engine: CoreEngine) : CoreEngineDelegate {
         door.addComponents(doorComp)
         door.addComponent(BackgroundColorComponent(0.75f, 0.75f, 0.75f, 1.0f))
 
-        val mob = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(32f, 32f)))
+        val mob = BaseEntity(Transform(Vector2f(32f + 16, 16f), 0f, Vector2f(32f, 32f)))
         mob.addComponent(mobComp)
         mob.addComponent(BackgroundColorComponent(0.75f, 0.75f, 0.75f, 1.0f))
 
