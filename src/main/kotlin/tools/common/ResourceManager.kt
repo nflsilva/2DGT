@@ -2,12 +2,13 @@ package tools.common
 
 import org.lwjgl.BufferUtils
 import org.lwjgl.stb.STBImage.*
-import tools.common.dto.ShaderData
 import tools.common.dto.ImageData
+import tools.common.dto.ShaderData
 import tools.common.exception.ErrorLoadingResourceException
 import tools.common.exception.ResourceNotFoundException
+import java.io.BufferedInputStream
 import java.net.URL
-import java.nio.Buffer
+import java.nio.ByteBuffer
 import java.nio.IntBuffer
 
 
@@ -16,6 +17,7 @@ object ResourceManager {
     private val textures: MutableMap<String, ImageData> = mutableMapOf()
     private val shaders: MutableMap<String, ShaderData> = mutableMapOf()
 
+    //TODO: What a mess. Rethink about this.
     fun loadTextureFromFile(fileName: String): ImageData {
         if(fileName in textures.keys) { return textures[fileName]!! }
         val resourceUrl = getResourceURLFromFile(fileName)
@@ -23,11 +25,43 @@ object ResourceManager {
         val height: IntBuffer = BufferUtils.createIntBuffer(1)
         val components: IntBuffer = BufferUtils.createIntBuffer(1)
 
-        val data = resourceUrl.readBytes()
-        val buffer = BufferUtils.createByteBuffer(data.count())
-        buffer.put(data)
+        val fileChunks: MutableList<ByteBuffer> = mutableListOf()
+        var reader: BufferedInputStream? = null
+        var totalSize = 0
 
-        stbi_load_from_memory(buffer.flip(), width, height, components, STBI_rgb_alpha)?.let {
+        try {
+            reader = BufferedInputStream(resourceUrl.openStream())
+            val readChunk = ByteArray(4096)
+
+            while (true)
+            {
+                val nReadBytes = reader.read(readChunk)
+                if(nReadBytes <= 0){ break }
+
+                totalSize += nReadBytes
+                fileChunks.add(BufferUtils.createByteBuffer(nReadBytes))
+
+                val buffer = fileChunks[fileChunks.size-1]
+                if(buffer.capacity() < readChunk.count()){
+                    for(i in 0 until buffer.capacity()){
+                        buffer.put(readChunk[i])
+                    }
+                }
+                else {
+                    buffer.put(readChunk)
+                }
+            }
+
+        } finally {
+            reader?.close()
+        }
+
+        val data = BufferUtils.createByteBuffer(totalSize)
+        fileChunks.forEach {
+            data.put(it.flip())
+        }
+
+        stbi_load_from_memory(data.flip(), width, height, components, STBI_rgb_alpha)?.let {
             val textureData = ImageData(width.get(), height.get(), components.get(), it)
             println(textureData)
             textures[fileName] = textureData

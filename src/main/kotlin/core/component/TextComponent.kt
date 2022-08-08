@@ -9,7 +9,8 @@ import render.model.BitmapFont
 class TextComponent(
     var drawOffset: Vector2f,
     var text: String,
-    val fontBitmap: BitmapFont
+    val fontBitmap: BitmapFont,
+    val fontSize: Float
     ): BaseComponent() {
 
     init {
@@ -17,8 +18,6 @@ class TextComponent(
     }
 
     private fun onUpdate(entity: BaseEntity, context: UpdateContext) {
-        val sizePerChar = Vector2f(text.length.toFloat())
-            .div(entity.transform.scale)
 
         for((i, c) in text.withIndex()){
             val char = fontBitmap.getCharacter(c)
@@ -26,15 +25,13 @@ class TextComponent(
             val transform = Transform(
                 Vector2f(entity.transform.position)
                     .add(drawOffset)
-                    .add(Vector2f(sizePerChar.x * i, 0f)),
+                    .add(Vector2f(fontSize * i, 0f)),
                 entity.transform.rotation,
-                sizePerChar
+                Vector2f(fontSize).mul(entity.transform.scale)
             )
             context.graphics.render(char, transform)
 
         }
-
-
 
     }
 

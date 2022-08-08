@@ -22,13 +22,16 @@ fun main(args: Array<String>) {
 
 class GUIRendering(private val engine: CoreEngine) : CoreEngineDelegate {
 
-
     override fun onStart() {
 
         val df = DefaultFont()
-        val c = TextComponent(Vector2f().zero(), "@Hello text rendering!", df)
+        val c = TextComponent(
+            Vector2f().zero(),
+            "@Hello text rendering! O Paulo e gay.",
+            df,
+            16f)
 
-        val e = BaseEntity(Transform(Vector2f(0f, 0f), 0.0f, Vector2f(1f)))
+        val e = BaseEntity(Transform(Vector2f(0f, 16f), 0.0f, Vector2f(1f, 1f)))
         e.addComponent(c)
 
         engine.addEntity(e)
