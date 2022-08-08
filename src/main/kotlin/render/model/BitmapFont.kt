@@ -46,7 +46,10 @@ open class BitmapFont(
     }
 
     fun getCharacter(char: Char): Sprite {
-        return characters[char]!!
+        characters[char]?.let {
+            return it
+        }
+        throw Exception("Character '$char' was not found.")
     }
 
 }

@@ -63,7 +63,6 @@ object ResourceManager {
 
         stbi_load_from_memory(data.flip(), width, height, components, STBI_rgb_alpha)?.let {
             val textureData = ImageData(width.get(), height.get(), components.get(), it)
-            println(textureData)
             textures[fileName] = textureData
             return textureData
         }

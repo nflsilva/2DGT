@@ -13,7 +13,7 @@ class DefaultFont(): BitmapFont(
     init {
         setCharacter('ª',1, 0)
         setRow(2, " !\"#\$%&\'()*+,-./")
-        setRow(3, "@123456789:;<=>?")
+        setRow(3, "0123456789:;<=>?")
         setRow(4, "@ABCDEFGHIJKLMNO")
         setRow(5, "PQRSTUVWXYZ[\\]^_")
         setRow(6, "`abcdefghijklmno")

@@ -87,9 +87,8 @@ class SpriteBatch(
         var textureIndex = textures.indexOf(sprite.texture)
         if (textureIndex < 0) {
             textures.add(sprite.texture)
-            textureIndex = textures.size
+            textureIndex = textures.size - 1
         }
-
         addAttributeData(TEXTURE_INDEX, textureIndex)
 
         val indexOffset = nEntities * 4
