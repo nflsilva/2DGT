@@ -27,7 +27,7 @@ class AnimatedSprites(private val engine: CoreEngine) : CoreEngineDelegate {
 
     override fun onStart() {
 
-        val animatedSprite = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(10f, 10f)))
+        val animatedSprite = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(64f, 64f)))
         val atlas = SpriteAtlas(
             "/texture/dungeon.png",
             9,

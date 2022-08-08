@@ -15,7 +15,14 @@ class Mouse(window: Long) {
     var dragDeltaX: Int = 0
     var dragDeltaY: Int = 0
 
+    var windowWith = intArrayOf(0)
+    var windowHeight = intArrayOf(0)
+
     init {
+
+
+        GLFW.glfwGetWindowSize(window, windowWith, windowHeight)
+
         GLFW.glfwSetCursorPosCallback(window) { _: Long, positionX: Double, positionY: Double ->
             onCursorChange(positionX, positionY)
         }
@@ -25,7 +32,6 @@ class Mouse(window: Long) {
         GLFW.glfwSetScrollCallback(window) { _: Long, offsetX: Double, offsetY: Double ->
             onScrollChange(offsetX, offsetY)
         }
-
     }
 
     fun onUpdate() {
@@ -36,10 +42,10 @@ class Mouse(window: Long) {
     private fun onCursorChange(mouseX: Double, mouseY: Double) {
         if (isHold) {
             dragDeltaX = mouseX.toInt() - positionX
-            dragDeltaY = mouseY.toInt() - positionY
+            dragDeltaY = windowHeight[0] - mouseY.toInt() - positionY
         } else {
             positionX = mouseX.toInt()
-            positionY = mouseY.toInt()
+            positionY = windowHeight[0] - mouseY.toInt()
         }
     }
 

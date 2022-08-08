@@ -83,7 +83,7 @@ class GUIRendering(private val engine: CoreEngine) : CoreEngineDelegate {
         bottomMenu.setText(t)
 
         val width = bottomMenu.getBarWidth()
-        if(input.mouseY > 500 && width < 100){
+        if(input.mouseY < 200 && width < 100){
             bottomMenu.changeBarWidth(width + 0.2f)
         }
         else if(width > 0) {

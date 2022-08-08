@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL30
 import org.lwjgl.opengl.GL30.glClearColor
 import core.EngineConfiguration
 import org.joml.Vector2f
+import org.joml.Vector3f
 import render.batch.ParticlesBatch
 import render.batch.ShapesBatch
 import render.batch.SpriteBatch
@@ -162,7 +163,8 @@ class RenderEngine(private val configuration: EngineConfiguration) {
         shader.updateUniforms(uniformData)
     }
     private fun draw() {
-        val projectionMatrix: Matrix4f = Matrix4f().setOrtho2D(left, right, bottom, top)
+        val projectionMatrix: Matrix4f = Matrix4f()
+            .setOrtho2D(left, right, bottom, top)
         drawParticles(projectionMatrix)
         drawSprites(projectionMatrix)
         drawShapes(projectionMatrix)
