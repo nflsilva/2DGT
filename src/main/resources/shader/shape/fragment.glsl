@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 
 #define SQUARE 0U
 #define CIRCLE 1U

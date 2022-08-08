@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 
 flat in int type;
 in vec4 color;

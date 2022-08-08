@@ -1,12 +1,13 @@
 package tools.common
 
 import org.lwjgl.BufferUtils
-import org.lwjgl.stb.STBImage.stbi_load
+import org.lwjgl.stb.STBImage.*
 import tools.common.dto.ShaderData
 import tools.common.dto.ImageData
 import tools.common.exception.ErrorLoadingResourceException
 import tools.common.exception.ResourceNotFoundException
 import java.net.URL
+import java.nio.Buffer
 import java.nio.IntBuffer
 
 
@@ -21,12 +22,19 @@ object ResourceManager {
         val width: IntBuffer = BufferUtils.createIntBuffer(1)
         val height: IntBuffer = BufferUtils.createIntBuffer(1)
         val components: IntBuffer = BufferUtils.createIntBuffer(1)
-        stbi_load(resourceUrl.path, width, height, components, 4)?.let { data ->
-            val textureData = ImageData(width.get(), height.get(), components.get(), data)
+
+        val data = resourceUrl.readBytes()
+        val buffer = BufferUtils.createByteBuffer(data.count())
+        buffer.put(data)
+
+        stbi_load_from_memory(buffer.flip(), width, height, components, STBI_rgb_alpha)?.let {
+            val textureData = ImageData(width.get(), height.get(), components.get(), it)
+            println(textureData)
             textures[fileName] = textureData
             return textureData
         }
-        throw ErrorLoadingResourceException(fileName)
+
+        throw ErrorLoadingResourceException(fileName + " R: " + stbi_failure_reason())
     }
 
     fun loadShaderSourceFromFile(fileName: String): ShaderData {

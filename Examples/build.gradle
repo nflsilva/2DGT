@@ -1,16 +1,18 @@
+import org.gradle.internal.os.OperatingSystem
+
 buildscript {
     ext.kotlinVersion = "1.6.0"
     ext.lwjglVersion = '3.3.1'
     ext.jomlVersion = '1.10.4'
 
-    switch (org.gradle.internal.os.OperatingSystem.current()) {
-        case org.gradle.internal.os.OperatingSystem.LINUX:
+    switch (OperatingSystem.current()) {
+        case OperatingSystem.LINUX:
             ext.lwjglNatives = "natives-linux"
             break
-        case org.gradle.internal.os.OperatingSystem.MAC_OS:
+        case OperatingSystem.MAC_OS:
             ext.lwjglNatives = natives-macos
             break
-        case org.gradle.internal.os.OperatingSystem.WINDOWS:
+        case OperatingSystem.WINDOWS:
             def osArch = System.getProperty("os.arch")
             project.ext.lwjglNatives = osArch.contains("64")
                     ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
@@ -28,7 +30,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.21'
     id 'application'
 }
 
