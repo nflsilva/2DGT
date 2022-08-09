@@ -1,11 +1,11 @@
-package tools.common
+package tools
 
 import org.lwjgl.BufferUtils
 import org.lwjgl.stb.STBImage.*
-import tools.common.dto.ImageData
-import tools.common.dto.ShaderData
-import tools.common.exception.ErrorLoadingResourceException
-import tools.common.exception.ResourceNotFoundException
+import tools.dto.ImageData
+import tools.dto.ShaderData
+import tools.exception.ErrorLoadingResourceException
+import tools.exception.ResourceNotFoundException
 import java.io.BufferedInputStream
 import java.net.URL
 import java.nio.ByteBuffer

@@ -6,7 +6,7 @@ import core.CoreEngineDelegate
 import core.component.BaseComponent
 import core.component.ComponentSignal
 import core.component.ComponentSignalDataField
-import core.component.ShapeComponent
+import core.component.render.ShapeComponent
 import core.dto.UpdateContext
 import org.joml.Random
 import org.joml.Vector2f
@@ -14,6 +14,7 @@ import render.dto.Color
 import render.dto.Shape
 import render.dto.Transform
 import ui.dto.InputStateData
+import java.util.*
 
 fun main(args: Array<String>) {
 
@@ -40,9 +41,9 @@ class ComponentSignalSystem(private val engine: CoreEngine) : CoreEngineDelegate
             val rr = Random().nextFloat()
             val rg = Random().nextFloat()
             val rb = Random().nextFloat()
-            addComponent(ShapeComponent(Shape.Type.DONUT, Color(rr, rg, rb, 1.0f)))
-            addComponent(FloorDetectionComponent())
-            addComponent(InvertForceComponent())
+            addComponent(ShapeComponent(uid, Shape.Type.DONUT, Color(rr, rg, rb, 1.0f)))
+            addComponent(FloorDetectionComponent(uid))
+            addComponent(InvertForceComponent(uid))
         }
 
         fun step(dt: Double){
@@ -71,7 +72,7 @@ class ComponentSignalSystem(private val engine: CoreEngine) : CoreEngineDelegate
         }
     }
 
-    class FloorDetectionComponent(): BaseComponent(){
+    class FloorDetectionComponent(entityId: UUID): BaseComponent(entityId){
 
         companion object {
             const val FORCE_DATA_TYPE = "force"
@@ -94,7 +95,7 @@ class ComponentSignalSystem(private val engine: CoreEngine) : CoreEngineDelegate
         }
     }
 
-    class InvertForceComponent(): BaseComponent(){
+    class InvertForceComponent(entityId: UUID): BaseComponent(entityId){
 
         var newAcceleration: Float? = null
 

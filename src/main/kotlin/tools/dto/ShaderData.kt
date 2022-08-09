@@ -1,3 +1,3 @@
-package tools.common.dto
+package tools.dto
 
 data class ShaderData(val sourceCode: String)

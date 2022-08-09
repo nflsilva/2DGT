@@ -1,7 +1,7 @@
 import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
-import core.component.ShapeComponent
+import core.component.render.ShapeComponent
 import org.joml.Vector2f
 import render.dto.Color
 import render.dto.Shape
@@ -26,13 +26,13 @@ class ScreenOrientation(private val engine: CoreEngine) : CoreEngineDelegate {
             Vector2f(0f, 0f),
             0.0f,
             Vector2f(64f, 64f)))
-        bottomLeft.addComponent(ShapeComponent(Shape.Type.CIRCLE, Color(1.0f, 0.0f, 0.0f, 1.0f)))
+        bottomLeft.addComponent(ShapeComponent(bottomLeft.uid, Shape.Type.CIRCLE, Color(1.0f, 0.0f, 0.0f, 1.0f)))
 
         val middle = BaseEntity(Transform(
             Vector2f(1280f/2, 720f/2),
             0.0f,
             Vector2f(64f, 64f)))
-        middle.addComponent(ShapeComponent(Shape.Type.CIRCLE, Color(0.0f, 1.0f, 0.0f, 1.0f)))
+        middle.addComponent(ShapeComponent(middle.uid, Shape.Type.CIRCLE, Color(0.0f, 1.0f, 0.0f, 1.0f)))
 
         engine.addEntity(bottomLeft)
         engine.addEntity(middle)

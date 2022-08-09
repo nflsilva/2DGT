@@ -7,9 +7,8 @@ import core.observer.SignalObserver
 import core.observer.UpdateObserver
 import java.util.*
 
-abstract class BaseComponent {
+abstract class BaseComponent(protected val entityId: UUID) {
 
-    protected val uid: UUID = UUID.randomUUID()
     var updateObserver: UpdateObserver? = null
     var signalObserver: SignalObserver? = null
     var cleanupObserver: CleanupObserver? = null

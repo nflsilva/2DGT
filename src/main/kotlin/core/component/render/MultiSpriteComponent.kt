@@ -1,4 +1,4 @@
-package core.component
+package core.component.render
 
 import core.BaseEntity
 import core.component.BaseComponent
@@ -7,8 +7,9 @@ import org.joml.Vector2f
 import render.dto.Sprite
 import render.dto.Transform
 import render.model.MultiSprite
+import java.util.*
 
-class MultiSpriteComponent(rows: Int, columns: Int) : BaseComponent() {
+class MultiSpriteComponent(entityId: UUID, rows: Int, columns: Int) : BaseComponent(entityId) {
 
     private val multiSprite = MultiSprite(rows, columns)
 

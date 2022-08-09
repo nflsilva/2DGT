@@ -3,7 +3,7 @@ package examples
 import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
-import core.component.ShapeComponent
+import core.component.render.ShapeComponent
 import org.joml.Random
 import org.joml.Vector2f
 import render.dto.Color
@@ -37,7 +37,7 @@ class ShapesBatchRendering(private val engine: CoreEngine) : CoreEngineDelegate 
             val rr = Random().nextFloat()
             val rg = Random().nextFloat()
             val rb = Random().nextFloat()
-            addComponent(ShapeComponent(Shape.Type.DONUT, Color(rr, rg, rb, 1.0f)))
+            addComponent(ShapeComponent(uid, Shape.Type.DONUT, Color(rr, rg, rb, 1.0f)))
         }
 
         fun step(dt: Double){

@@ -1,9 +1,11 @@
-package core.component
+package core.component.input
 
 import core.BaseEntity
+import core.component.BaseComponent
 import core.dto.UpdateContext
+import java.util.*
 
-class RotateComponent(private val velocity: Float) : BaseComponent() {
+class RotateComponent(entityId: UUID, private val velocity: Float) : BaseComponent(entityId) {
 
     init {
         setUpdateObserver { entity: BaseEntity, context -> onUpdate(entity, context) }

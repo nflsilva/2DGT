@@ -5,9 +5,9 @@ import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL20.*
-import tools.common.Log
-import tools.common.ResourceManager
-import tools.common.dto.ShaderData
+import tools.Log
+import tools.ResourceManager
+import tools.dto.ShaderData
 
 abstract class BaseShader(vertexData: ShaderData, fragmentData: ShaderData) {
 

@@ -1,4 +1,4 @@
-package tools.common.exception
+package tools.exception
 
 class ErrorLoadingResourceException: Exception {
     constructor() : super()

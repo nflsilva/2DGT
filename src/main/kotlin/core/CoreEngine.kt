@@ -3,8 +3,9 @@ package core
 
 import core.component.ComponentSignal
 import core.dto.UpdateContext
+import physics.PhysicsEngine
 import render.RenderEngine
-import tools.common.Log
+import tools.Log
 import ui.UIEngine
 import ui.dto.InputStateData
 
@@ -23,12 +24,14 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
 
     private val uiEngine: UIEngine
     private val renderEngine: RenderEngine
+    private val physicsEngine: PhysicsEngine
     private val configuration: EngineConfiguration
     var delegate: CoreEngineDelegate? = null
 
     init {
         this.configuration = configuration ?: EngineConfiguration.default()
         renderEngine = RenderEngine(this.configuration)
+        physicsEngine = PhysicsEngine(this.configuration)
         uiEngine = UIEngine(this.configuration)
     }
 
@@ -89,18 +92,21 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
     private fun onFrame() {
         delegate?.onFrame()
         uiEngine.onFrame()
+        physicsEngine.onFrame()
         renderEngine.onFrame()
     }
     private fun onUpdate(elapsedTime: Double, input: InputStateData) {
+        val updateContext = UpdateContext(elapsedTime, input, this, renderEngine, physicsEngine)
         delegate?.onUpdate(elapsedTime, input)
         uiEngine.onUpdate()
+        physicsEngine.onUpdate()
         renderEngine.onUpdate()
 
         processingSignalsIndex = (processingSignalsIndex + 1) % 2
 
         gameObjects.forEach { o ->
             signals[processingSignalsIndex].forEach { s -> o.onSignal(s) }
-            o.onUpdate(UpdateContext(elapsedTime, input, this, renderEngine))
+            o.onUpdate(updateContext)
         }
         signals[processingSignalsIndex].clear()
 

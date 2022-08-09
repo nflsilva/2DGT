@@ -1,9 +1,9 @@
 import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
-import core.component.BackgroundColorComponent
-import core.component.MultiSpriteAnimationComponent
-import core.component.SpriteAnimationComponent
+import core.component.render.BackgroundColorComponent
+import core.component.render.MultiSpriteAnimationComponent
+import core.component.render.SpriteAnimationComponent
 import org.joml.Vector2f
 import render.dto.Transform
 import render.model.MultiSprite
@@ -49,8 +49,9 @@ class MultiSpriteExample(private val engine: CoreEngine) : CoreEngineDelegate {
             }
         }
 
+        val door = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(128f, 128f)))
         // Setup keyframes
-        val doorComp = MultiSpriteAnimationComponent(2, 2).apply { setState("0") }
+        val doorComp = MultiSpriteAnimationComponent(door.uid,2, 2).apply { setState("0") }
         for(nDoor in 0 until 14) {
             doorComp.apply {
                 addAnimationKeyframe("0", MultiSprite(2, 2)
@@ -63,18 +64,18 @@ class MultiSpriteExample(private val engine: CoreEngine) : CoreEngineDelegate {
             }
         }
 
-        val mobComp = SpriteAnimationComponent().apply { setState("0") }
+        door.addComponents(doorComp)
+        door.addComponent(BackgroundColorComponent(door.uid, 0.75f, 0.75f, 0.75f, 1.0f))
+
+        val mob = BaseEntity(Transform(Vector2f(32f + 16, 16f), 0f, Vector2f(32f, 32f)))
+        // Setup keyframes
+        val mobComp = SpriteAnimationComponent(mob.uid).apply { setState("0") }
         for(nMob in 0 until 8){
             mobComp.addAnimationKeyframe("0", atlas.getSprite("mob${nMob}"), 0.1)
         }
 
-        val door = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(128f, 128f)))
-        door.addComponents(doorComp)
-        door.addComponent(BackgroundColorComponent(0.75f, 0.75f, 0.75f, 1.0f))
-
-        val mob = BaseEntity(Transform(Vector2f(32f + 16, 16f), 0f, Vector2f(32f, 32f)))
         mob.addComponent(mobComp)
-        mob.addComponent(BackgroundColorComponent(0.75f, 0.75f, 0.75f, 1.0f))
+        mob.addComponent(BackgroundColorComponent(mob.uid, 0.75f, 0.75f, 0.75f, 1.0f))
 
         engine.addEntity(mob)
         engine.addEntity(door)

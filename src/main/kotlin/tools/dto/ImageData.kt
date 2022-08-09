@@ -1,4 +1,4 @@
-package tools.common.dto
+package tools.dto
 
 import java.nio.ByteBuffer
 

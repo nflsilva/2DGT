@@ -1,4 +1,4 @@
-package tools.common
+package tools
 
 class Log {
     companion object {

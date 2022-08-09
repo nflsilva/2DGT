@@ -1,18 +1,15 @@
-package core.component
+package core.component.render
 
 import core.BaseEntity
+import core.component.BaseComponent
 import core.dto.UpdateContext
-import org.joml.Vector2f
-import render.dto.Transform
-import render.model.MultiSprite
+import render.dto.Sprite
+import java.util.*
 
-class MultiSpriteAnimationComponent(
-    private val rows: Int,
-    private val columns: Int
-) : BaseComponent() {
+class SpriteAnimationComponent(entityId: UUID) : BaseComponent(entityId) {
 
     private data class AnimationKeyframe(
-        val multiSprite: MultiSprite,
+        val sprite: Sprite,
         val duration: Double
     )
 
@@ -31,23 +28,8 @@ class MultiSpriteAnimationComponent(
         val currentStateKeyframes = keyframesByState[currentState] ?: return
 
         val currentKeyframe = currentStateKeyframes[currentKeyframeIndex % currentStateKeyframes.size]
-        val sprites = currentKeyframe.multiSprite
 
-        val spriteSize = Vector2f(entity.transform.scale)
-            .div(Vector2f(columns.toFloat(), rows.toFloat()))
-
-        for(r in 0 until rows){
-            for(c in 0 until columns){
-                val sprite = sprites.getSprite(r, c) ?: continue
-                val drawOffset = Vector2f(c.toFloat(), r.toFloat()).mul(spriteSize)
-                val transform = Transform(
-                    Vector2f(entity.transform.position).add(drawOffset),
-                    entity.transform.rotation,
-                    spriteSize
-                )
-                context.graphics.render(sprite, transform)
-            }
-        }
+        context.graphics.render(currentKeyframe.sprite, entity.transform)
 
         currentKeyframeElapsedTime += context.elapsedTime
         if (currentKeyframe.duration < currentKeyframeElapsedTime) {
@@ -57,15 +39,11 @@ class MultiSpriteAnimationComponent(
 
     }
 
-    fun addAnimationKeyframe(state: String,
-                             multiSprite: MultiSprite,
-                             duration: Double) {
-
+    fun addAnimationKeyframe(state: String, sprite: Sprite, duration: Double) {
         if (state !in keyframesByState.keys) {
             keyframesByState[state] = mutableListOf()
         }
-
-        keyframesByState[state]?.add(AnimationKeyframe(multiSprite, duration))
+        keyframesByState[state]?.add(AnimationKeyframe(sprite, duration))
     }
 
     fun setState(state: String) {

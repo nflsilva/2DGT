@@ -1,13 +1,15 @@
-package core.component
+package core.component.render
 
 import core.BaseEntity
+import core.component.BaseComponent
 import core.dto.UpdateContext
 import render.dto.Color
 import render.dto.Particle
+import java.util.*
 
-class ParticleComponent(private val particle: Particle) : BaseComponent() {
+class ParticleComponent(entityId: UUID, private val particle: Particle) : BaseComponent(entityId) {
 
-    constructor(type: Int, size: Float, color: Color) : this(Particle(type, size, color))
+    constructor(entityId: UUID, type: Int, size: Float, color: Color) : this(entityId, Particle(type, size, color))
 
     init {
         setUpdateObserver { entity, context -> onUpdate(entity, context) }

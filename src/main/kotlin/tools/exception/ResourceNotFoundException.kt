@@ -1,4 +1,4 @@
-package tools.common.exception
+package tools.exception
 
 class ResourceNotFoundException: Exception {
     constructor() : super()

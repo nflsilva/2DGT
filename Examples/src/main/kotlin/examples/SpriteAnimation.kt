@@ -1,12 +1,11 @@
 import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
-import core.component.ParticleComponent
-import core.component.SpriteAnimationComponent
-import core.component.TranslateComponent
+import core.component.input.TranslateComponent
+import core.component.render.ParticleComponent
+import core.component.render.SpriteAnimationComponent
 import org.joml.Vector2f
 import render.dto.Color
-import render.dto.Sprite
 import render.dto.Transform
 import render.model.SpriteAtlas
 import ui.dto.InputStateData
@@ -23,11 +22,11 @@ fun main(args: Array<String>) {
 
 class AnimatedSprites(private val engine: CoreEngine) : CoreEngineDelegate {
 
-    private val animComp = SpriteAnimationComponent()
+    private val animatedSprite = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(64f, 64f)))
+    private val animComp = SpriteAnimationComponent(animatedSprite.uid)
 
     override fun onStart() {
 
-        val animatedSprite = BaseEntity(Transform(Vector2f(0f, 0f), 0f, Vector2f(64f, 64f)))
         val atlas = SpriteAtlas(
             "/texture/dungeon.png",
             9,
@@ -69,14 +68,14 @@ class AnimatedSprites(private val engine: CoreEngine) : CoreEngineDelegate {
         }
 
         animatedSprite.addComponent(animComp)
-        animatedSprite.addComponent(TranslateComponent(500F))
+        animatedSprite.addComponent(TranslateComponent(animatedSprite.uid, 500F))
         engine.addEntity(animatedSprite)
 
         val particleEntity = BaseEntity(Transform(
             Vector2f(10f, 10f),
             0.0f,
             Vector2f(1f, 1f)))
-        val particleComponent = ParticleComponent(0, 15f, Color(1.0f, 0.0f, 0.0f, 1.0f))
+        val particleComponent = ParticleComponent(particleEntity.uid, 0, 15f, Color(1.0f, 0.0f, 0.0f, 1.0f))
         particleEntity.addComponent(particleComponent)
         engine.addEntity(particleEntity)
 

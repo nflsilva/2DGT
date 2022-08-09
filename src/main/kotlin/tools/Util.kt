@@ -1,4 +1,4 @@
-package tools.common
+package tools
 
 import kotlin.math.abs
 import kotlin.math.log

@@ -10,5 +10,4 @@ data class Shape(
         CIRCLE(1),
         DONUT(2),
     }
-
 }

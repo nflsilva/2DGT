@@ -1,17 +1,20 @@
-package core.component
+package core.component.render
 
 import core.BaseEntity
+import core.component.BaseComponent
 import core.dto.UpdateContext
 import org.joml.Vector2f
 import render.dto.Color
 import render.dto.Shape
 import render.dto.Transform
+import java.util.*
 
-class ShapeComponent(private val shape: Shape,
-                     private val centered: Boolean = true) : BaseComponent() {
+class ShapeComponent(entityId: UUID,
+                     private val shape: Shape,
+                     private val centered: Boolean = true) : BaseComponent(entityId) {
 
-    constructor(type: Shape.Type, color: Color, centered: Boolean = true) :
-            this(Shape(type.value, color), centered)
+    constructor(entityId: UUID, type: Shape.Type, color: Color, centered: Boolean = true) :
+            this(entityId, Shape(type.value, color), centered)
 
     init {
         setUpdateObserver { entity, context -> onUpdate(entity, context) }

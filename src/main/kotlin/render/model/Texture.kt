@@ -1,8 +1,8 @@
 package render.model
 
 import org.lwjgl.opengl.GL13.*
-import tools.common.ResourceManager
-import tools.common.dto.ImageData
+import tools.ResourceManager
+import tools.dto.ImageData
 import java.nio.ByteBuffer
 
 class Texture(

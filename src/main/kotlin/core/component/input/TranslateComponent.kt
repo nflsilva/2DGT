@@ -1,10 +1,12 @@
-package core.component
+package core.component.input
 
 import core.BaseEntity
+import core.component.BaseComponent
 import core.dto.UpdateContext
 import ui.dto.InputStateData
+import java.util.*
 
-class TranslateComponent(private val speed: Float = 10F) : BaseComponent() {
+class TranslateComponent(entityId: UUID, private val speed: Float = 10F) : BaseComponent(entityId) {
 
     init {
         setUpdateObserver { entity, context -> onUpdate(entity, context) }
