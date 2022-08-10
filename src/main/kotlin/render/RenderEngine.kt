@@ -1,13 +1,12 @@
 package render
 
+import core.EngineConfiguration
 import org.joml.Matrix4f
+import org.joml.Vector2f
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL30
 import org.lwjgl.opengl.GL30.glClearColor
-import core.EngineConfiguration
-import org.joml.Vector2f
-import org.joml.Vector3f
 import render.batch.ParticlesBatch
 import render.batch.ShapesBatch
 import render.batch.SpriteBatch
@@ -147,7 +146,6 @@ class RenderEngine(private val configuration: EngineConfiguration) {
             suitableBatch = batch
             break
         }
-
 
         if (suitableBatch == null) {
             suitableBatch = ShapesBatch(DEFAULT_BATCH_SIZE)

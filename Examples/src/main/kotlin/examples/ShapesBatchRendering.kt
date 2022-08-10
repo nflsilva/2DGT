@@ -14,7 +14,7 @@ import ui.dto.InputStateData
 fun main(args: Array<String>) {
 
     val engine = CoreEngine()
-    val gameLogic = ComponentSignalSystem(engine)
+    val gameLogic = ShapesBatchRendering(engine)
     engine.delegate = gameLogic
     engine.start()
 
@@ -30,35 +30,20 @@ class ShapesBatchRendering(private val engine: CoreEngine) : CoreEngineDelegate 
     class Ball(positionX: Float, positionY: Float, radius: Float):
         BaseEntity(Transform(Vector2f(positionX, positionY), 0.0f, Vector2f(radius))) {
 
-        private val acceleration: Vector2f = Vector2f().zero()
-        var oldPosition = Vector2f(positionX, positionY)
+        private val mov = VerletIntegrationComponent(uid, 1f)
 
         init {
             val rr = Random().nextFloat()
             val rg = Random().nextFloat()
             val rb = Random().nextFloat()
             addComponent(ShapeComponent(uid, Shape.Type.DONUT, Color(rr, rg, rb, 1.0f)))
+            addComponent(mov)
         }
 
-        fun step(dt: Double){
-
-            var currentPosition = Vector2f(transform.position.x, transform.position.y)
-            val velocity = Vector2f(currentPosition.x, currentPosition.y).sub(oldPosition)
-
-            oldPosition = Vector2f(currentPosition.x, currentPosition.y)
-
-            acceleration.mul(dt.toFloat() * dt.toFloat())
-            currentPosition = currentPosition.add(velocity).add(acceleration)
-
-            transform.position.x = currentPosition.x
-            transform.position.y = currentPosition.y
-
-            acceleration.zero()
+        fun applyForce(force: Vector2f){
+            mov.applyForce(force)
         }
 
-        fun accelerate(value: Vector2f){
-            acceleration.add(value)
-        }
     }
 
     override fun onStart() {}
@@ -72,13 +57,11 @@ class ShapesBatchRendering(private val engine: CoreEngine) : CoreEngineDelegate 
         shapes.add(e)
 
         shapes.forEach { shape ->
-            shape.accelerate(gravity)
+            shape.applyForce(gravity)
 
             if(shape.transform.position.y <= 20f){
-                shape.accelerate(Vector2f(0f, 5000f))
+                shape.applyForce(Vector2f(0f, 5000f))
             }
-
-            shape.step(elapsedTime)
         }
 
         if(shapes.size >= lastPrintOn + 100) {

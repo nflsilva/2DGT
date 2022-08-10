@@ -1,10 +1,11 @@
 package render.batch
 
 import org.joml.Vector2f
-import org.lwjgl.opengl.GL30.glBindVertexArray
+import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
+import org.lwjgl.opengl.GL11.glBindTexture
 import render.dto.Sprite
-import render.model.Texture
 import render.dto.Transform
+import render.model.Texture
 
 class SpriteBatch(
     private val maxSprites: Int,
@@ -41,7 +42,7 @@ class SpriteBatch(
 
     override fun unbind() {
         super.unbind()
-        glBindVertexArray(0)
+        glBindTexture(GL_TEXTURE_2D, 0)
     }
 
     fun addSprite(sprite: Sprite, transform: Transform) {
@@ -51,10 +52,10 @@ class SpriteBatch(
             return
         }
 
-        val tl = Vector2f(0f, 1f)
-        val bl = Vector2f(0f, 0f)
-        val br = Vector2f(1f, 0f)
-        val tr = Vector2f(1f, 1f)
+        val tl = Vector2f(-.5f, .5f)
+        val bl = Vector2f(-.5f, -.5f)
+        val br = Vector2f(.5f, -.5f)
+        val tr = Vector2f(.5f, .5f)
 
         addAttributeData(
             POSITION_INDEX,

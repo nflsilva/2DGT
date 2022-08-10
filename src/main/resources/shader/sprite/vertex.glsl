@@ -29,7 +29,7 @@ void main(){
 
     vec2 final_position = scale(in_position, in_scale);
     final_position = rotate(final_position, in_rotation);
-    final_position = translate(final_position, in_translation);
+    final_position = translate(final_position, in_translation + in_scale / 2f);
 
     gl_Position = in_projectionMatrix * vec4(final_position, 0f, 1f);
     textureCoords = in_textureCoords;

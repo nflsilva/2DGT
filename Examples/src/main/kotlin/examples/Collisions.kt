@@ -10,12 +10,12 @@ import core.component.render.TextComponent
 import org.joml.Math.abs
 import org.joml.Random
 import org.joml.Vector2f
+import physics.dto.CollisionContext
 import render.dto.Color
 import render.dto.Shape
 import render.dto.Transform
 import render.font.DefaultFont
 import ui.dto.InputStateData
-import java.util.*
 
 fun main(args: Array<String>) {
 
@@ -76,7 +76,7 @@ class Collisions(private val engine: CoreEngine) : CoreEngineDelegate {
             acceleration.add(value)
         }
 
-        fun getCollisions(): List<UUID>{
+        fun getCollisions(): List<CollisionContext>{
             return collisionComponent.collisions
         }
 
@@ -128,17 +128,26 @@ class Collisions(private val engine: CoreEngine) : CoreEngineDelegate {
     private fun processCollisions(particle: Particle){
 
         val transferAmount = 0.5f
-        particle.getCollisions().forEach { otherUid ->
-            val other = shapes.find { it.uid == otherUid } ?: return
+        particle.getCollisions().forEach { otherContext ->
+            val otherParticle = shapes.find { it.uid == otherContext.entityId } ?: return
 
-            if(particle.energy > other.energy){
+            if(particle.energy > otherParticle.energy){
                 particle.energy -= transferAmount
-                other.energy += transferAmount
+                otherParticle.energy += transferAmount
             }
-            else if(particle.energy < other.energy){
+            else if(particle.energy < otherParticle.energy){
                 particle.energy += transferAmount
-                other.energy -= transferAmount
+                otherParticle.energy -= transferAmount
             }
+
+            val diff =
+                particle.transform.scale.x / 2f + otherParticle.transform.scale.x / 2f - otherContext.distance
+
+            val collisionDirection = Vector2f(particle.transform.position)
+                .sub(otherParticle.transform.position).normalize()
+
+            particle.transform.translate(Vector2f(collisionDirection).mul(Vector2f(diff / 2f)))
+            otherParticle.transform.translate(Vector2f(collisionDirection).mul(Vector2f(-diff / 2f)))
 
         }
     }

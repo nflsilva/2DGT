@@ -2,12 +2,13 @@ package physics
 
 import core.EngineConfiguration
 import physics.dto.CircleCollisionBox
-import java.util.UUID
+import physics.dto.CollisionContext
+import java.util.*
 
 class PhysicsEngine(private val configuration: EngineConfiguration) {
 
     private val collisionBoxes: MutableList<CircleCollisionBox> = mutableListOf()
-    private val collisions: MutableMap<UUID, MutableList<UUID>> = mutableMapOf()
+    private val collisions: MutableMap<UUID, MutableList<CollisionContext>> = mutableMapOf()
 
     fun onStart() {}
     fun onFrame() {}
@@ -15,11 +16,13 @@ class PhysicsEngine(private val configuration: EngineConfiguration) {
 
         collisions.clear()
         for(box0 in collisionBoxes){
-            collisions[box0.componentId] = mutableListOf()
+            collisions[box0.entityId] = mutableListOf()
             for(box1 in collisionBoxes){
                 if(box0 == box1) continue
-                if(box0.isCollidingWith(box1)){
-                    collisions[box0.componentId]?.add(box1.componentId)
+                val collisionResult = box0.isCollidingWith(box1)
+
+                if(collisionResult.first){
+                    collisions[box0.entityId]?.add(CollisionContext(box1.entityId, collisionResult.second))
                 }
             }
         }
@@ -32,8 +35,8 @@ class PhysicsEngine(private val configuration: EngineConfiguration) {
     fun addCollisionBox(box: CircleCollisionBox){
         collisionBoxes.add(box)
     }
-    fun getCollisionsBox(componentUUID: UUID): List<UUID>? {
-        return collisions[componentUUID]
+    fun getCollisionsBox(entityId: UUID): List<CollisionContext>? {
+        return collisions[entityId]
     }
 
 }

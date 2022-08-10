@@ -104,6 +104,7 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
 
         processingSignalsIndex = (processingSignalsIndex + 1) % 2
 
+        //println("GO: " + gameObjects.count())
         gameObjects.forEach { o ->
             signals[processingSignalsIndex].forEach { s -> o.onSignal(s) }
             o.onUpdate(updateContext)
@@ -113,7 +114,7 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
     }
     private fun onCleanUp() {
         gameObjects.forEach { o ->
-            o.cleanUp()
+            o.onCleanUp()
         }
     }
 
@@ -127,6 +128,9 @@ class CoreEngine(configuration: EngineConfiguration? = null) {
     }
     fun addEntity(entity: BaseEntity) {
         gameObjects.add(entity)
+    }
+    fun removeEntity(entity: BaseEntity) {
+        gameObjects.remove(entity)
     }
     fun sendSignal(signal: ComponentSignal){
         signals[(processingSignalsIndex + 1) % 2].add(signal)

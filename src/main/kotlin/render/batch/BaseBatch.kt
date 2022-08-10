@@ -32,16 +32,16 @@ abstract class BaseBatch(
 
     open fun bind() {
 
+        glBindVertexArray(vao)
+        for (i in 0 until attributes.size) {
+            glEnableVertexAttribArray(i)
+        }
+
         attributes.forEach { attribute ->
             bindAttributeBuffer(attribute.value.vbo, attribute.value.buffer.flip())
         }
 
         bindIndexBuffer(indexesVbo, indices.flip())
-
-        glBindVertexArray(vao)
-        for (i in 0 until attributes.size) {
-            glEnableVertexAttribArray(i)
-        }
 
     }
     open fun unbind() {

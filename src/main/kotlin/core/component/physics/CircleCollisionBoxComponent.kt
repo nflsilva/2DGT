@@ -4,11 +4,12 @@ import core.BaseEntity
 import core.component.BaseComponent
 import core.dto.UpdateContext
 import physics.dto.CircleCollisionBox
+import physics.dto.CollisionContext
 import java.util.*
 
 class CircleCollisionBoxComponent(entityId: UUID, private val centered: Boolean = true): BaseComponent(entityId) {
 
-    var collisions: List<UUID> = mutableListOf()
+    var collisions: List<CollisionContext> = mutableListOf()
     init {
         setUpdateObserver { entity: BaseEntity, context -> onUpdate(entity, context) }
     }

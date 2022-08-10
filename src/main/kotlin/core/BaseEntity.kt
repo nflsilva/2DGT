@@ -26,7 +26,7 @@ open class BaseEntity(var transform: Transform) {
             s.onSignal(this, signal)
         }
     }
-    fun cleanUp() {
+    fun onCleanUp() {
         for (c in cleanupObservers) {
             c.onCleanup(this)
         }
@@ -37,7 +37,6 @@ open class BaseEntity(var transform: Transform) {
         component.signalObserver?.let { o -> signalObservers.add(o) }
         component.cleanupObserver?.let { o -> cleanupObservers.add(o) }
     }
-
     fun addComponents(vararg components: BaseComponent) {
         components.forEach { c ->
             addComponent(c)

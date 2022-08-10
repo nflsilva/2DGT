@@ -3,9 +3,9 @@ package render.dto
 import org.joml.Vector2f
 
 data class Transform(
-    val position: Vector2f,
+    var position: Vector2f,
     var rotation: Float,
-    val scale: Vector2f) {
+    var scale: Vector2f) {
 
     fun translate(value: Vector2f){
         position.add(value)
@@ -16,5 +16,4 @@ data class Transform(
     fun rotate(angle: Float){
         rotation += angle
     }
-
 }
