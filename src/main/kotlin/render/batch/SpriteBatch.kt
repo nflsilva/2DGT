@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
 import org.lwjgl.opengl.GL11.glBindTexture
 import render.dto.Sprite
 import render.dto.Transform
-import render.model.MultiSprite
 import render.model.Texture
 
 class SpriteBatch(
@@ -34,7 +33,6 @@ class SpriteBatch(
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addFloatAttributeBuffer(TEXTURE_COORDS_INDEX, 2)
         addIntAttributeBuffer(TEXTURE_INDEX, 1)
-        addFloatAttributeBuffer(TEXTURE_INDEX, 2)
     }
 
     override fun bind() {
@@ -58,37 +56,10 @@ class SpriteBatch(
         )
     }
 
-    fun addSprite(sprite: Sprite, transform: Transform){
-        addSprite(sprite, transform, Vector2f().zero())
-    }
+    fun addSprite(sprite: Sprite, transform: Transform, offset: Vector2f): Boolean {
 
-    fun addMultiSprite(multiSprite: MultiSprite, transform: Transform){
-
-        val spriteSize = Vector2f(transform.scale)
-            .div(Vector2f(multiSprite.columns.toFloat(), multiSprite.rows.toFloat()))
-
-        var currentRowY = multiSprite.rows / -2f
-        for(r in 0 until multiSprite.rows){
-            var currentRowX = multiSprite.columns / -2f
-            for(c in 0 until multiSprite.columns){
-                val sprite = multiSprite.getSprite(r, c) ?: continue
-                val t = Transform(
-                    Vector2f(transform.position),
-                    transform.rotation,
-                    Vector2f(spriteSize).mul(sprite.size)
-                )
-                addSprite(sprite.sprite, t, Vector2f(currentRowX, currentRowY))
-                currentRowX += 1f
-            }
-            currentRowY += 1f
-        }
-    }
-
-    private fun addSprite(sprite: Sprite, transform: Transform, offset: Vector2f) {
-
-        //TODO: Create exception for this
         if (nEntities >= maxSprites || textures.size >= maxTextures) {
-            return
+            return true
         }
 
         val quad = getQuad(offset)
@@ -121,15 +92,19 @@ class SpriteBatch(
             perVertex = false
         )
 
-        var textureIndex = textures.indexOf(sprite.texture)
-        if (textureIndex < 0) {
+        var textureIndex: Int? = null
+        for((i, texture) in textures.withIndex()){
+            if(texture.id == sprite.texture.id){
+                textureIndex = i
+                break
+            }
+        }
+        if(textureIndex == null){
             textures.add(sprite.texture)
             textureIndex = textures.size - 1
         }
+
         addAttributeData(TEXTURE_INDEX, textureIndex)
-
-
-
 
         val indexOffset = nEntities * 4
         addIndexData(
@@ -141,6 +116,8 @@ class SpriteBatch(
             0 + indexOffset
         )
         nEntities += 1
+
+        return nEntities >= maxSprites || textures.size >= maxTextures
     }
 
     override fun clear() {
@@ -148,15 +125,16 @@ class SpriteBatch(
         textures.clear()
     }
 
-    fun isTextureFull(): Boolean {
-        return textures.size == maxTextures
+    override fun isFull(): Boolean {
+        val fullEntities = super.isFull()
+        return fullEntities || textures.size  >= maxTextures
     }
 
     fun hasTexture(texture: Texture): Boolean {
         return textures.find { it.id == texture.id } != null
     }
 
-    fun getTextureSlots(): Int {
+    fun getNumberOfTextures(): Int {
         return textures.size
     }
 

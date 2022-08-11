@@ -12,8 +12,8 @@ class TextComponent(
     entityId: UUID,
     var drawOffset: Vector2f,
     var text: String,
-    val fontBitmap: BitmapFont,
-    val fontSize: Float
+    private val fontBitmap: BitmapFont,
+    private val fontSize: Float
     ): BaseComponent(entityId) {
 
     init {
@@ -33,9 +33,7 @@ class TextComponent(
                 Vector2f(fontSize)//.mul(entity.transform.scale)
             )
             context.graphics.render(char, transform)
-
         }
-
     }
 
 }

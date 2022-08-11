@@ -101,8 +101,8 @@ abstract class BaseBatch(
         indices.clear()
         nEntities = 0
     }
-    fun isFull(): Boolean {
-        return nEntities == maxEntities
+    open fun isFull(): Boolean {
+        return nEntities >= maxEntities
     }
     fun cleanUp() {
         glBindVertexArray(0)

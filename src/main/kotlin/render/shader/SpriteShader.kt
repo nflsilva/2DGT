@@ -27,6 +27,7 @@ class SpriteShader : BaseShader(VERTEX_SHADER, FRAGMENT_SHADER) {
         for (i in 0 until data.textureSlots) {
             samplers.add(i)
         }
+
         setUniformiv(TEXTURE_SLOTS_UNIFORM, samplers)
     }
 

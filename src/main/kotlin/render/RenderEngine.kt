@@ -34,9 +34,10 @@ class RenderEngine(private val configuration: EngineConfiguration) {
     private val left = 0.0F
     private val top = configuration.resolutionHeight.toFloat() * (1.0F - zoom)
     private val right = configuration.resolutionWidth.toFloat() * (1.0F - zoom)
+    private var suitableSpriteBatch: Int = 0
 
     companion object {
-        const val DEFAULT_BATCH_SIZE: Int = 2
+        const val DEFAULT_BATCH_SIZE: Int = 10000
         const val DEFAULT_SCREEN_RENDER_MARGINS: Int = 100
     }
 
@@ -46,7 +47,7 @@ class RenderEngine(private val configuration: EngineConfiguration) {
         glGetIntegerv(GL30.GL_MAX_TEXTURE_IMAGE_UNITS, mtsb)
         maxTextureSlots = mtsb.get()
 
-        spriteBatches = mutableListOf()
+        spriteBatches = mutableListOf(SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots))
         spriteShader = SpriteShader()
 
         particleShader = ParticleShader()
@@ -68,6 +69,8 @@ class RenderEngine(private val configuration: EngineConfiguration) {
     }
     fun onUpdate() {
         spriteBatches.forEach { it.clear() }
+        suitableSpriteBatch = 0
+
         particleBatches.forEach { it.clear() }
         shapeBatches.forEach { it.clear() }
     }
@@ -107,54 +110,47 @@ class RenderEngine(private val configuration: EngineConfiguration) {
                 transform.position.y < top + DEFAULT_SCREEN_RENDER_MARGINS &&
                 transform.position.y + size.y > bottom - DEFAULT_SCREEN_RENDER_MARGINS
     }
-    private fun addToSuitableSpriteBatch(data: Sprite, transform: Transform) {
-        var suitableBatch: SpriteBatch? = null
-        for (batch in spriteBatches) {
-            if (batch.isFull()) {
-                continue
-            }
-            if (batch.hasTexture(data.texture) || !batch.isTextureFull()) {
-                suitableBatch = batch
-                break
-            }
-        }
 
-        if (suitableBatch == null) {
-            suitableBatch = SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots)
-            spriteBatches.add(suitableBatch)
-        }
+    private fun incrementSuitableSpriteBatch(){
+        suitableSpriteBatch += 1
 
-        suitableBatch.addSprite(data, transform)
+        if (suitableSpriteBatch == spriteBatches.size) {
+            spriteBatches.add(SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots))
+        }
+        println(spriteBatches.count())
     }
+
+    private fun addToSuitableSpriteBatch(data: Sprite, transform: Transform) {
+        val suitableBatch = spriteBatches[suitableSpriteBatch]
+        val isFull = suitableBatch.addSprite(data, transform, Vector2f(-0.5f))
+        if (isFull) {
+            incrementSuitableSpriteBatch()
+        }
+    }
+
     private fun addToSuitableSpriteBatch(data: MultiSprite, transform: Transform) {
-        var suitableBatch: SpriteBatch? = null
-        for (batch in spriteBatches) {
-            if (batch.isFull()) {
-                continue
-            }
+        val suitableBatch = spriteBatches[suitableSpriteBatch]
 
-            var hasAllTextures = true
+        val spriteSize = Vector2f(transform.scale).div(Vector2f(data.columns.toFloat(), data.rows.toFloat()))
+
+        var currentRowY = data.rows / -2f
+        for(r in 0 until data.rows){
+            var currentRowX = data.columns / -2f
             for(c in 0 until data.columns){
-                for(r in 0 until data.rows){
-                    val s = data.getSprite(r, c) ?: continue
-                    hasAllTextures = hasAllTextures && batch.hasTexture(s.sprite.texture)
-                    //println("$r $c ${s.sprite.texture.id} = $hasAllTextures")
+                val sprite = data.getSprite(r, c) ?: continue
+                val t = Transform(
+                    Vector2f(transform.position),
+                    transform.rotation,
+                    Vector2f(spriteSize).mul(sprite.size)
+                )
+                val isFull = suitableBatch.addSprite(sprite.sprite, t, Vector2f(currentRowX, currentRowY))
+                if (isFull) {
+                    incrementSuitableSpriteBatch()
                 }
+                currentRowX += 1f
             }
-
-            if (hasAllTextures || !batch.isTextureFull()) {
-                suitableBatch = batch
-                break
-            }
+            currentRowY += 1f
         }
-
-        if (suitableBatch == null) {
-
-            suitableBatch = SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots)
-            spriteBatches.add(suitableBatch)
-        }
-
-        suitableBatch.addMultiSprite(data, transform)
     }
     private fun addToSuitableParticleBatch(data: Particle, transform: Transform) {
         var suitableBatch: ParticlesBatch? = null
@@ -210,7 +206,7 @@ class RenderEngine(private val configuration: EngineConfiguration) {
                 spriteShader,
                 ShaderUniforms(
                     projectionMatrix = projectionMatrix,
-                    textureSlots = batch.getTextureSlots()
+                    textureSlots = batch.getNumberOfTextures()
                 )
             )
             glDrawElements(GL_TRIANGLES, batch.nIndexes, GL_UNSIGNED_INT, 0)

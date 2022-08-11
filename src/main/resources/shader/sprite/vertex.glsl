@@ -6,7 +6,6 @@ layout (location=2) in float in_rotation;
 layout (location=3) in vec2 in_scale;
 layout (location=4) in vec2 in_textureCoords;
 layout (location=5) in int in_textureIndex;
-layout (location=6) in vec2 in_rotationTranslation;
 
 uniform mat4 in_projectionMatrix;
 

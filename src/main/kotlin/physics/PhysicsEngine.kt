@@ -28,9 +28,7 @@ class PhysicsEngine(private val configuration: EngineConfiguration) {
         }
         collisionBoxes.clear()
     }
-    fun onCleanUp() {
-
-    }
+    fun onCleanUp() {}
 
     fun addCollisionBox(box: CircleCollisionBox){
         collisionBoxes.add(box)
