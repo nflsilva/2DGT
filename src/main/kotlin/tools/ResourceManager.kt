@@ -56,7 +56,7 @@ object ResourceManager {
             reader?.close()
         }
 
-        val data = BufferUtils.createByteBuffer(totalSize)
+        val data: ByteBuffer = BufferUtils.createByteBuffer(totalSize)
         fileChunks.forEach {
             data.put(it.flip())
         }
