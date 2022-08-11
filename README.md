@@ -31,7 +31,28 @@
 ## About The Project
 
 A collection of very simple tools to build 2D games.
-It supports 2D rendering.
+
+### Key features
+
+```
+-Rendering
+	- Simple shapes (Circle, Donut, Quad)
+	- Particles
+	- Sprites
+	- Sprites made from different 'sub-sprites' (MultiSprites)
+	- Sprite animation
+	- Batch rendering
+	- Text rendering
+	
+- Physics
+    - Collision detection
+    - Verlet integration
+	
+-Input
+	- Mouse clicks
+	- Keyboard
+```
+
 
 ### Built With
 
@@ -68,4 +89,4 @@ As study material I would like to acknowledge the following:
 
 * [Component based architecture](https://gameprogrammingpatterns.com/component.html)
 * [ThinMatrix YouTube channel](https://www.youtube.com/channel/UCUkRj4qoT1bsWpE_C8lZYoQ)
-* [TheBennyBox YouTube channel](https://www.youtube.com/channel/UCnlpv-hhcsAtEHKR2y2fW4Q)
+* [OneLoneCoder YouTube channel](https://www.youtube.com/c/javidx9)

@@ -27,7 +27,7 @@ class RenderEngine(private val configuration: EngineConfiguration) {
     private lateinit var shapeBatches: MutableList<ShapesBatch>
     private lateinit var shapeShader: ShapeShader
 
-    private var maxTextureSlots: Int = 0
+    private var maxTextureSlots: Int = 100000
 
     private var zoom = 0.0F
     private val bottom = 0.0F
@@ -37,7 +37,7 @@ class RenderEngine(private val configuration: EngineConfiguration) {
     private var suitableSpriteBatch: Int = 0
 
     companion object {
-        const val DEFAULT_BATCH_SIZE: Int = 10000
+        const val DEFAULT_BATCH_SIZE: Int = 100000
         const val DEFAULT_SCREEN_RENDER_MARGINS: Int = 100
     }
 
@@ -117,7 +117,6 @@ class RenderEngine(private val configuration: EngineConfiguration) {
         if (suitableSpriteBatch == spriteBatches.size) {
             spriteBatches.add(SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots))
         }
-        println(spriteBatches.count())
     }
 
     private fun addToSuitableSpriteBatch(data: Sprite, transform: Transform) {

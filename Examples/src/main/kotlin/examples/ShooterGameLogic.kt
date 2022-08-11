@@ -45,7 +45,7 @@ class ShooterGameLogic(private val engine: CoreEngine) : CoreEngineDelegate {
     private lateinit var asteroidAtlas: SpriteAtlas
     private lateinit var hud: HUD
     private var score: Int = 0
-    private var maxAsteroids: Int = 2
+    private var maxAsteroids: Int = 6
 
     override fun onStart() {
 
