@@ -3,6 +3,8 @@
 <div id="top"></div>
 <br />
 <div align="center">
+    <img src="/assets/shapes-batch.png">
+    <img src="/assets/space-shooter.png">
 </div>
 
 <!-- TABLE OF CONTENTS -->
@@ -82,13 +84,6 @@ The recommended way of compiling 2DGT is with IntelliJ IDEA, using `Gradle`.
 
 This is still under construction. 
 However, the subproject "Examples" has a collection of example programs that use 2DGT.
-Some mentions are
-
-<div align="center">
-    <img src="/assets/shapes-batch.png">
-    <img src="/assets/space-shooter.png">
-</div>
-
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
