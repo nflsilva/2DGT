@@ -6,32 +6,29 @@ import render.dto.Sprite
 open class SpriteAtlas(
     private val texture: Texture,
     private val numberOfRows: Int,
-    private val numberOfColumns: Int,
-    private val spriteSize: SpriteSize,
+    private val numberOfColumns: Int
 ) {
+
+    private val spriteSize: Vector2f = Vector2f(
+        texture.width / numberOfColumns.toFloat(),
+        texture.height / numberOfRows.toFloat())
 
     private val sprites: MutableMap<String, Sprite> = mutableMapOf()
 
-    enum class SpriteSize(val value: Float) {
-        X16(16f),
-        X32(32f),
-        X64(64f)
-    }
+    constructor(textureResource: String, numberOfRows: Int, numberOfColumns: Int) :
+            this(Texture(textureResource), numberOfRows, numberOfColumns)
 
-    constructor(textureResource: String, numberOfRows: Int, numberOfColumns: Int, spriteSize: SpriteSize) :
-            this(Texture(textureResource), numberOfRows, numberOfColumns, spriteSize)
-
-    fun setSprite(name: String, row: Int, column: Int) {
+    fun setSprite(name: String, row: Int, column: Int, multiSprite: Vector2f = Vector2f(1f)) {
 
         //TODO: Create exception for this
         if (column > numberOfColumns || row > numberOfRows || sprites.keys.contains(name)) {
             return
         }
 
-        val spriteLeft = column * spriteSize.value / texture.width.toFloat()
-        val spriteTop = row * spriteSize.value / texture.height.toFloat()
-        val spriteBottom = spriteTop + spriteSize.value / texture.height.toFloat()
-        val spriteRight = spriteLeft + spriteSize.value / texture.width.toFloat()
+        val spriteLeft = column * spriteSize.x / texture.width.toFloat()
+        val spriteTop = row * spriteSize.y / texture.height.toFloat()
+        val spriteBottom = spriteTop + (spriteSize.y * multiSprite.y) / texture.height.toFloat()
+        val spriteRight = spriteLeft + (spriteSize.x  * multiSprite.x)/ texture.width.toFloat()
 
         sprites[name] = Sprite(
             texture,

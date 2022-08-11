@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
 import org.lwjgl.opengl.GL11.glBindTexture
 import render.dto.Sprite
 import render.dto.Transform
+import render.model.MultiSprite
 import render.model.Texture
 
 class SpriteBatch(
@@ -12,6 +13,8 @@ class SpriteBatch(
     private val maxTextures: Int
 ) :
     BaseBatch(maxSprites, 4, 6) {
+
+    private data class Quad(val tl: Vector2f, val bl: Vector2f, val br: Vector2f, val tr: Vector2f)
 
     private val textures: MutableList<Texture> = mutableListOf()
 
@@ -31,6 +34,7 @@ class SpriteBatch(
         addFloatAttributeBuffer(SCALE_INDEX, 2)
         addFloatAttributeBuffer(TEXTURE_COORDS_INDEX, 2)
         addIntAttributeBuffer(TEXTURE_INDEX, 1)
+        addFloatAttributeBuffer(TEXTURE_INDEX, 2)
     }
 
     override fun bind() {
@@ -45,24 +49,56 @@ class SpriteBatch(
         glBindTexture(GL_TEXTURE_2D, 0)
     }
 
-    fun addSprite(sprite: Sprite, transform: Transform) {
+    private fun getQuad(translatedBy: Vector2f = Vector2f().zero()): Quad {
+        return Quad(
+            Vector2f(0f + translatedBy.x, 1f + translatedBy.y),
+            Vector2f(0f + translatedBy.x, 0f + translatedBy.y),
+            Vector2f(1f + translatedBy.x, 0f + translatedBy.y),
+            Vector2f(1f + translatedBy.x, 1f + translatedBy.y)
+        )
+    }
+
+    fun addSprite(sprite: Sprite, transform: Transform){
+        addSprite(sprite, transform, Vector2f().zero())
+    }
+
+    fun addMultiSprite(multiSprite: MultiSprite, transform: Transform){
+
+        val spriteSize = Vector2f(transform.scale)
+            .div(Vector2f(multiSprite.columns.toFloat(), multiSprite.rows.toFloat()))
+
+        var currentRowY = multiSprite.rows / -2f
+        for(r in 0 until multiSprite.rows){
+            var currentRowX = multiSprite.columns / -2f
+            for(c in 0 until multiSprite.columns){
+                val sprite = multiSprite.getSprite(r, c) ?: continue
+                val t = Transform(
+                    Vector2f(transform.position),
+                    transform.rotation,
+                    Vector2f(spriteSize).mul(sprite.size)
+                )
+                addSprite(sprite.sprite, t, Vector2f(currentRowX, currentRowY))
+                currentRowX += 1f
+            }
+            currentRowY += 1f
+        }
+    }
+
+    private fun addSprite(sprite: Sprite, transform: Transform, offset: Vector2f) {
 
         //TODO: Create exception for this
         if (nEntities >= maxSprites || textures.size >= maxTextures) {
             return
         }
 
-        val tl = Vector2f(-.5f, .5f)
-        val bl = Vector2f(-.5f, -.5f)
-        val br = Vector2f(.5f, -.5f)
-        val tr = Vector2f(.5f, .5f)
+        val quad = getQuad(offset)
 
         addAttributeData(
             POSITION_INDEX,
-            tl.x, tl.y,
-            bl.x, bl.y,
-            br.x, br.y,
-            tr.x, tr.y,
+            quad.tl.x, quad.tl.y,
+            quad.bl.x, quad.bl.y,
+            quad.br.x, quad.br.y,
+            quad.tr.x, quad.tr.y,
             perVertex = false
         )
 
@@ -92,6 +128,9 @@ class SpriteBatch(
         }
         addAttributeData(TEXTURE_INDEX, textureIndex)
 
+
+
+
         val indexOffset = nEntities * 4
         addIndexData(
             0 + indexOffset,
@@ -114,7 +153,7 @@ class SpriteBatch(
     }
 
     fun hasTexture(texture: Texture): Boolean {
-        return textures.contains(texture)
+        return textures.find { it.id == texture.id } != null
     }
 
     fun getTextureSlots(): Int {

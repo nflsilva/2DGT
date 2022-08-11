@@ -3,6 +3,7 @@ package examples
 import core.BaseEntity
 import core.CoreEngine
 import core.CoreEngineDelegate
+import core.component.physics.VerletIntegrationComponent
 import core.component.render.ShapeComponent
 import org.joml.Random
 import org.joml.Vector2f

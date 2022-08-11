@@ -11,7 +11,7 @@ class Texture(
     data: ByteBuffer
 ) {
 
-    private val id: Int = glGenTextures()
+    val id: Int = glGenTextures()
 
     constructor(textureData: ImageData) : this(textureData.width, textureData.height, textureData.data)
     constructor(resourceName: String) : this(ResourceManager.loadTextureFromFile(resourceName))

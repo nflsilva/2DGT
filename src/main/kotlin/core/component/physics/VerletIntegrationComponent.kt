@@ -1,4 +1,4 @@
-package examples
+package core.component.physics
 
 import core.BaseEntity
 import core.component.BaseComponent
@@ -16,7 +16,7 @@ class VerletIntegrationComponent(entityId: UUID,
         setUpdateObserver { entity: BaseEntity, context -> onUpdate(entity, context) }
     }
 
-    private fun onUpdate(entity: BaseEntity, context: UpdateContext) {
+    private fun onUpdate(entity: BaseEntity, context: UpdateContext)  {
 
         if(previousPosition == null){
             previousPosition = Vector2f(entity.transform.position)

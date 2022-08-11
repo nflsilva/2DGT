@@ -30,8 +30,7 @@ class AnimatedSprites(private val engine: CoreEngine) : CoreEngineDelegate {
         val atlas = SpriteAtlas(
             "/texture/dungeon.png",
             9,
-            28,
-            SpriteAtlas.SpriteSize.X16).apply {
+            28).apply {
 
             setSprite("walking0", 6, 0)
             setSprite("walking1", 6, 1)

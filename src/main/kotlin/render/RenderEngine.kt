@@ -11,6 +11,7 @@ import render.batch.ParticlesBatch
 import render.batch.ShapesBatch
 import render.batch.SpriteBatch
 import render.dto.*
+import render.model.MultiSprite
 import render.shader.*
 
 class RenderEngine(private val configuration: EngineConfiguration) {
@@ -94,6 +95,11 @@ class RenderEngine(private val configuration: EngineConfiguration) {
             addToSuitableShapeBatch(shape, transform)
         }
     }
+    fun render(multiSprite: MultiSprite, transform: Transform){
+        if (isVisible(transform, transform.scale)) {
+            addToSuitableSpriteBatch(multiSprite, transform)
+        }
+    }
 
     private fun isVisible(transform: Transform, size: Vector2f): Boolean {
         return transform.position.x > left - DEFAULT_SCREEN_RENDER_MARGINS &&
@@ -119,6 +125,36 @@ class RenderEngine(private val configuration: EngineConfiguration) {
         }
 
         suitableBatch.addSprite(data, transform)
+    }
+    private fun addToSuitableSpriteBatch(data: MultiSprite, transform: Transform) {
+        var suitableBatch: SpriteBatch? = null
+        for (batch in spriteBatches) {
+            if (batch.isFull()) {
+                continue
+            }
+
+            var hasAllTextures = true
+            for(c in 0 until data.columns){
+                for(r in 0 until data.rows){
+                    val s = data.getSprite(r, c) ?: continue
+                    hasAllTextures = hasAllTextures && batch.hasTexture(s.sprite.texture)
+                    //println("$r $c ${s.sprite.texture.id} = $hasAllTextures")
+                }
+            }
+
+            if (hasAllTextures || !batch.isTextureFull()) {
+                suitableBatch = batch
+                break
+            }
+        }
+
+        if (suitableBatch == null) {
+
+            suitableBatch = SpriteBatch(DEFAULT_BATCH_SIZE, maxTextureSlots)
+            spriteBatches.add(suitableBatch)
+        }
+
+        suitableBatch.addMultiSprite(data, transform)
     }
     private fun addToSuitableParticleBatch(data: Particle, transform: Transform) {
         var suitableBatch: ParticlesBatch? = null

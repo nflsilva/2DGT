@@ -3,15 +3,12 @@ package core.component.render
 import core.BaseEntity
 import core.component.BaseComponent
 import core.dto.UpdateContext
-import org.joml.Vector2f
-import render.dto.Transform
 import render.model.MultiSprite
 import java.util.*
 
 class MultiSpriteAnimationComponent(
     entityId: UUID,
-    private val rows: Int,
-    private val columns: Int
+    private val loop: Boolean = true,
 ) : BaseComponent(entityId) {
 
     private data class AnimationKeyframe(
@@ -19,6 +16,7 @@ class MultiSpriteAnimationComponent(
         val duration: Double
     )
 
+    var completedState: Boolean = false
     private var currentState: String? = null
     private var currentKeyframeIndex: Int = 0
     private var currentKeyframeElapsedTime: Double = 0.0
@@ -30,34 +28,24 @@ class MultiSpriteAnimationComponent(
 
     private fun onUpdate(entity: BaseEntity, context: UpdateContext) {
 
-        if (currentState == null) return
-        val currentStateKeyframes = keyframesByState[currentState] ?: return
+        if(!completedState || loop) {
+            if (currentState == null) return
+            val currentStateKeyframes = keyframesByState[currentState] ?: return
 
-        val currentKeyframe = currentStateKeyframes[currentKeyframeIndex % currentStateKeyframes.size]
-        val sprites = currentKeyframe.multiSprite
+            val currentKeyframe = currentStateKeyframes[currentKeyframeIndex]
+            context.graphics.render(currentKeyframe.multiSprite, entity.transform)
 
-        val spriteSize = Vector2f(entity.transform.scale)
-            .div(Vector2f(columns.toFloat(), rows.toFloat()))
+            currentKeyframeElapsedTime += context.elapsedTime
+            if (currentKeyframe.duration < currentKeyframeElapsedTime) {
+                currentKeyframeIndex++
+                currentKeyframeElapsedTime = 0.0
+            }
 
-        for(r in 0 until rows){
-            for(c in 0 until columns){
-                val sprite = sprites.getSprite(r, c) ?: continue
-                val drawOffset = Vector2f(c.toFloat(), r.toFloat()).mul(spriteSize)
-                val transform = Transform(
-                    Vector2f(entity.transform.position).add(drawOffset),
-                    entity.transform.rotation,
-                    spriteSize
-                )
-                context.graphics.render(sprite, transform)
+            if(currentKeyframeIndex == currentStateKeyframes.size){
+                currentKeyframeIndex = 0
+                completedState = true
             }
         }
-
-        currentKeyframeElapsedTime += context.elapsedTime
-        if (currentKeyframe.duration < currentKeyframeElapsedTime) {
-            currentKeyframeIndex++
-            currentKeyframeElapsedTime = 0.0
-        }
-
     }
 
     fun addAnimationKeyframe(state: String,
@@ -73,6 +61,8 @@ class MultiSpriteAnimationComponent(
 
     fun setState(state: String) {
         currentState = state
+        currentKeyframeIndex = 0
+        completedState = false
     }
 
 }

@@ -6,13 +6,14 @@ import core.dto.UpdateContext
 import render.dto.Sprite
 import java.util.*
 
-class SpriteAnimationComponent(entityId: UUID) : BaseComponent(entityId) {
+class SpriteAnimationComponent(entityId: UUID, private val loop: Boolean = true) : BaseComponent(entityId) {
 
     private data class AnimationKeyframe(
         val sprite: Sprite,
         val duration: Double
     )
 
+    var completedState: Boolean = false
     private var currentState: String? = null
     private var currentKeyframeIndex: Int = 0
     private var currentKeyframeElapsedTime: Double = 0.0
@@ -25,18 +26,26 @@ class SpriteAnimationComponent(entityId: UUID) : BaseComponent(entityId) {
     private fun onUpdate(entity: BaseEntity, context: UpdateContext) {
 
         if (currentState == null) return
-        val currentStateKeyframes = keyframesByState[currentState] ?: return
 
-        val currentKeyframe = currentStateKeyframes[currentKeyframeIndex % currentStateKeyframes.size]
+        if(!completedState || loop) {
 
-        context.graphics.render(currentKeyframe.sprite, entity.transform)
+            val currentStateKeyframes = keyframesByState[currentState] ?: return
 
-        currentKeyframeElapsedTime += context.elapsedTime
-        if (currentKeyframe.duration < currentKeyframeElapsedTime) {
-            currentKeyframeIndex++
-            currentKeyframeElapsedTime = 0.0
+            val currentKeyframe = currentStateKeyframes[currentKeyframeIndex]
+
+            context.graphics.render(currentKeyframe.sprite, entity.transform)
+
+            currentKeyframeElapsedTime += context.elapsedTime
+            if (currentKeyframe.duration < currentKeyframeElapsedTime) {
+                currentKeyframeIndex++
+                currentKeyframeElapsedTime = 0.0
+            }
+
+            if(currentKeyframeIndex == currentStateKeyframes.size){
+                currentKeyframeIndex = 0
+                completedState = true
+            }
         }
-
     }
 
     fun addAnimationKeyframe(state: String, sprite: Sprite, duration: Double) {
@@ -48,6 +57,8 @@ class SpriteAnimationComponent(entityId: UUID) : BaseComponent(entityId) {
 
     fun setState(state: String) {
         currentState = state
+        currentKeyframeIndex = 0
+        completedState = false
     }
 
 }
