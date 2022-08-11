@@ -41,7 +41,7 @@ class Collisions(private val engine: CoreEngine) : CoreEngineDelegate {
         private val shape = Shape(Shape.Type.CIRCLE.value, Color(1f))
         private val collisionComponent = CircleCollisionBoxComponent(uid)
         private val font = DefaultFont()
-        private val textComponent = TextComponent(uid, Vector2f(transform.scale).div(3f), "ABCDE", font, 16f)
+        private val textComponent = TextComponent(uid, Vector2f(transform.scale).div(2f), "ABCDE", font, 16f)
 
         init {
             addComponent(ShapeComponent(uid, shape))

@@ -41,6 +41,7 @@ A collection of very simple tools to build 2D games.
 	- Sprites
 	- Sprites made from different 'sub-sprites' (MultiSprites)
 	- Sprite animation
+	- Sprite atlas processing
 	- Batch rendering
 	- Text rendering
 	
@@ -79,8 +80,8 @@ The recommended way of compiling 2DGT is with IntelliJ IDEA, using `Gradle`.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-<!-- TODO -->
-
+This is still under construction. 
+However, the subproject "Examples" has a collection of example programs that use 2DGT.
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
