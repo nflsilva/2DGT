@@ -5,6 +5,7 @@
 <div align="center">
     <img src="/assets/shapes-batch.png">
     <img src="/assets/space-shooter.png">
+    <img src="/assets/planets.png">
 </div>
 
 <!-- TABLE OF CONTENTS -->
